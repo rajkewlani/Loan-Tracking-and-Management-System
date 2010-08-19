@@ -1,0 +1,240 @@
+
+<% content_for :head do %>
+  <% if current_user.is_underwriter? %>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        $('#verify_employment_with_employer').iphoneSwitch('<%= loan.verified_employment_with_employer ? "on" : "off" %>',
+        function() {
+          $.post("/loans/<%= loan.id %>/update_validation_status","t=employment_with_employer&v=1&comment="+$('#comment_text').val(),function(data) {
+            $('#comment_msg').show();
+            $('#comment_msg').html(data);
+            $('#employment_block').hide();
+            $('#personal').show();
+            $('#personal_block').show();
+            $('#verify_button').show();
+            $('#verify_customer_block').show();
+            $('#verify_employer_block').hide();
+
+
+            $('#verified_employment_checkmark').html('&#8730; ');
+
+            document.getElementById('tab_personal').innerHTML="<a href='#' class='content-box-tabs default-tab current' id='personal_link' onclick='"+ 'ShowHideTab("personal")'+"'" +" rel='history'><span id='verified_personal_checkmark'></span>Personal</a>";
+            document.getElementById('tab_employment').innerHTML="<a href='#' id='employment_link' onclick='"+ 'ShowHideTab("employment")'+"'" +" rel='history'><span id='verified_employment_checkmark'>&#8730;&nbsp;</span>Employment</a>";
+          });
+        },
+        function() {
+          $.post("/loans/<%= loan.id %>/update_validation_status","t=employment_with_employer&v=0",null,"script");
+          //$('#verified_employment_checkmark').html('');
+          $('#verify_customer_block').hide();
+        },
+        { switch_on_container_path: '/images/iphone_switch/iphone_switch_container_off.png' }
+      );
+        $('#verify_employment_with_customer').iphoneSwitch('<%= loan.verified_employment_with_customer ? "on" : "off" %>',
+        function()
+        {
+          $.post("/loans/<%= loan.id %>/update_validation_status","t=employment_with_customer&v=1&comment="+ $('#comment_text').val(),function(data) {
+            //$('#verified_employment_checkmark').html('&#8730; ');
+            $('#comment_msg').show();
+            $('#comment_msg').html(data);
+            $('#employment_block').hide();
+            $('#tila').show();
+            $('#tila_block').show();
+            $('#verify_tila_button').show();
+            document.getElementById('disclosed_finance_charge_amount').focus();
+
+            document.getElementById('tab_tila').innerHTML="<a href='#' class='content-box-tabs default-tab current' id='tila_link' onclick='"+ 'ShowHideTab("tila")'+"'" +" rel='history'><span id='verified_tila_checkmark'></span>TILA</a>";
+            document.getElementById('tab_employment').innerHTML="<a href='#' id='employment_link' onclick='"+ 'ShowHideTab("employment")'+"'" +" rel='history'><span id='verified_employment_checkmark'>&#8730;&nbsp;</span>Employment</a>";
+          });
+        },
+
+        function()
+        {
+          $.post("/loans/<%= loan.id %>/update_validation_status","t=employment_with_customer&v=0",null,"script");
+          //$('#verified_employment_checkmark').html('');
+        },
+        { switch_on_container_path: '/images/iphone_switch/iphone_switch_container_off.png' }
+      );
+
+        $("#addcomment").click(function()
+        {
+          //comment = $('#comment_text').val();
+          $.post('/loan/<%= loan.id %>/add_comment_customer',"comment="+ $('#comment_text').val(),function(data)
+          {
+            $('#comment_message').fadeTo('fast',1.0)
+            $('#comment_message').show();
+            $('#comment_msg').html(data);
+            $('#comment_text').val("");
+
+
+            //$('#comment').hide();
+            //$('#show_detail').width(1000);
+            //cus_comment = $('#comment_text').val();
+            //  if (cus_comment == "" )
+            //  {
+            //  $('#comment_message').hide();
+            // }
+            //else
+            //{
+            //$('#comment_message').show();
+          });
+        });
+
+        $('#emp_remark').change(function(){
+          remark_value = $(this).val();
+          $.get("/loan/<%= loan.id %>/loan_remark","remark_value="+remark_value,function(data){
+
+          });
+        });
+
+      });
+    </script>
+    <div class="clear"></div>
+  <% end %>
+<% end %>
+<div id="employment_block">
+  <div id="comment_message" class="notification success png_bg" style="display:none;"><a class="close" href="#"><img alt="close" title="Close this notification" src="/images/icons/cross_grey_small.png"/></a><div id="comment_msg"></div></div>
+  <% if current_user.is_underwriter? && loan.pending_approval? %>
+    <div id="verify_employer_block" style="<% if @loan.verified_employment_with_employer == false %>float: right; padding-bottom: 10px; margin-top: 0px;display:''<%else%>display:none<%end%>">
+      <div style="float: right; padding-bottom: 10px; margin-top: -10px;">
+        <a href="#"><div id="verify_employment_with_employer"></div></a>
+      </div>
+
+      <div style="float: right; padding:6px 0 4px; margin-top: -10px;margin-right:10px;margin-left:10px">
+        With Employer:
+      </div>
+    </div>
+    <div id="verify_customer_block" style="<% if @loan.verified_employment_with_employer == true  %>display:''<%else%>display:none<%end%>">
+      <div style="float: right; padding-bottom: 10px; margin-top: -10px;">
+        <a href="#"><div id="verify_employment_with_customer"></div></a>
+      </div>
+      <div style="float: right; padding:6px 0 4px; margin-top: -10px;margin-right:10px;">
+        With Customer:
+      </div>
+    </div>
+    <div class="clear"></div>
+  <% end %>
+
+<%if current_user.role == "underwriter" %>
+    <div id="show_detail" style="width:650px;">
+  <% else %>
+      <div id="show_detail">
+  <% end %>
+    <%if current_user.role == "underwriter" %>
+      <ul class="show_details" style="width:650px;">
+      <% else %>
+        <ul class="show_details">
+      <% end %>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Employer:</label>
+          <%= in_place_editor_field :customer, :employer_name, {}, {:value_required => true} %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Employer Address:</label>
+          <%= in_place_editor_field :customer, :employer_address, {}, {:value_required => true} %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Employer City:</label>
+          <%= in_place_editor_field :customer, :employer_city, {}, {:value_required => true} %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Employer State:</label>
+          <%= in_place_editor_field :customer, :employer_state, { :style => "padding-right: 100px;" },
+            { :field_type => 'select', :value_required => true, :select_options => Common::US_STATES.sort.map{|k,v|"#{k} - #{v}:#{k}"} } %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Employer ZIP:</label>
+          <%= in_place_editor_field :customer, :employer_zip, {}, {:value_required => true} %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Months Employed:</label>
+          <%= in_place_editor_field :customer, :months_employed, {}, {:value_required => true} %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Occupation:</label>
+          <%= in_place_editor_field :customer, :occupation, {}, {:value_required => false} %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Employer Phone:</label>
+          <%= in_place_editor_field :customer, :employer_phone, {}, {:value_required => true, :format => "phone"} %>
+          <% if @employer_listings.length == 0 %>
+            <%= display_warning_tooltip(:customer, :employer_phone, "Not listed on 411.com") %>
+          <% else %>
+            <% if @employer_listings.first.line_type == "cell phone" %>
+              <%= image_tag("icons/tiny_cell_phone.png") %>
+              <%= display_warning_tooltip(:customer, :employer_phone_cell, "Employer phone is a cell phone") %>
+            <% else %>
+              <%= image_tag("icons/landline.png") %>
+            <% end %>
+
+            <% if @employer_listings.first.state != customer.state %>
+              <%= display_warning_tooltip(:customer, :employer_phone_state_mismatch, "Employer phone state does not match application") %>
+            <% end %>
+          <% end %>
+          <% if @employer_listings.length >= 1 %>
+            <%= link_to_function image_tag("icons/tiny_rolodex.png", :border => 0, :width => 10, :height => 10), "$('#employer_phone_details').dialog('open')" %>
+          <% end %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Employer Phone Ext:</label>
+          <%= in_place_editor_field :customer, :employer_phone_ext, {}, {:value_required => false} %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Employer Fax:</label>
+          <%= in_place_editor_field :customer, :employer_fax, {}, {:value_required => false, :format => "phone"} %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Supervisor Name:</label>
+          <%= in_place_editor_field :customer, :supervisor_name, {}, {:value_required => false} %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Supervisor Phone:</label>
+          <%= in_place_editor_field :customer, :supervisor_phone, {}, {:value_required => false, :format => "phone"} %>
+          <% if @employer_listings.length == 0 %>
+            <%= display_warning_tooltip(:customer, :supervisor_phone, "Not listed on 411.com") %>
+          <% else %>
+            <% if @employer_listings.first.line_type == "cell phone" %>
+              <%= image_tag("icons/tiny_cell_phone.png") %>
+              <%= display_warning_tooltip(:customer, :supervisor_phone_cell, "Supervisor phone is a cell phone") %>
+            <% else %>
+              <%= image_tag("icons/landline.png") %>
+            <% end %>
+
+            <% if @employer_listings.first.state != customer.state %>
+              <%= display_warning_tooltip(:customer, :supervisor_phone_state_mismatch, "Supervisor phone state does not match application") %>
+            <% end %>
+          <% end %>
+          <% if @employer_listings.length >= 1 %>
+            <%= link_to_function image_tag("icons/tiny_rolodex.png", :border => 0, :width => 10, :height => 10), "$('#supervisor_phone_details').dialog('open')" %>
+          <% end %>
+        </li>
+        <li class="<%= cycle('odd','even') %>">
+          <label>Supervisor Phone Ext:</label>
+          <%= in_place_editor_field :customer, :supervisor_phone_ext, {}, {:value_required => false} %>
+        </li>
+      </ul>
+  </div>
+  <%if current_user.role == "underwriter" %>
+    <div id="employe_remark" style="float:right;margin-top: -287px;margin-right:20px;">
+      Remark : <%= select("emp","remark",Loan::REMARKS_OPTIONS) %>
+    </div>
+
+    <div id="comment" style="float:right;margin-top: -255px;margin-left:100px;">
+      <div style="vertical-align: top;float: left;height:250px;width:68px;padding-right: 2px;">Comment :</div>
+      <div style="height:250px;width:250px;float:left;">
+        <%= text_area :comment, "text", :style => "width:230px;height:200px;margin-right:15px;" %>
+        <p>
+          <%= link_to_function(submit_tag "Add Comment",:class=>"button",:id=>"addcomment") %>
+        </p>
+      </div>
+    </div>
+  <% end %>
+  <div id="employer_phone_details" style="display: none;" class="dialog">
+    <%= render :partial => "/includes/listing_data_for_phone", :locals => { :phone => customer.employer_phone } %>
+  </div>
+
+  <div id="supervisor_phone_details" style="display: none;" class="dialog">
+    <%= render :partial => "/includes/listing_data_for_phone", :locals => { :phone => customer.supervisor_phone } %>
+  </div>
+
+</div>
+

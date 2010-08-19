@@ -1,0 +1,15 @@
+  <% form_for :loan, :html => { :id => 'garnishment_status_form'} do |f| %>
+    <%= f.hidden_field :id, :value => @loan.id, :id => 'garnishment_status_loan_id' %>
+    <fieldset>
+      <p>
+        <%= f.check_box :garnishment_approved %> Approved
+      </p>
+      <p>
+        <%= f.check_box :court_order %> Court Order
+      </p>
+      <p>
+        <%= f.label :aasm_state, 'Status' %>
+        <%= f.select :aasm_state, [['Garnishments','garnishments'],['Pending Write Off','pending_write_off']] %>
+      </p>
+    </fieldset>
+  <% end %>

@@ -1,0 +1,442 @@
+<% content_for :head do %>
+<script type="text/javascript">
+
+  function setBankAccountFields() {
+    $('#credit_card_fieldset').hide();
+    if ($('#scheduled_payment_bank_account_id').val() == '') {
+      // Add New Bank Account
+      $('#bank_account_fieldset').show();
+    } else {
+      // Existing Account
+      $('#bank_account_fieldset').hide();
+    }
+  }
+
+  function setCreditCardFields() {
+    $('#bank_account_fieldset').hide();
+    if ($('#scheduled_payment_credit_card_id').val() == '') {
+      // Add New Credit Card
+      $('#credit_card_fieldset').show();
+    } else {
+      // Existing Account
+      $('#credit_card_fieldset').hide();
+    }
+  }
+
+  function setPaymentMethodFields() {
+    payment_method = $('#payment_method').val();
+    switch(payment_method) {
+      case 'bank_account':
+        $('#payment_tab_credit_card').hide();
+        $('#payment_tab_check_number').hide();
+        $('#payment_tab_bank_account').show();
+        setBankAccountFields();
+        break;
+      case 'credit_card':
+        $('#payment_tab_bank_account').hide();
+        $('#payment_tab_check_number').hide();
+        $('#payment_tab_credit_card').show();
+        setCreditCardFields();
+        break;
+      case 'check':
+        $('#payment_tab_credit_card').hide();
+        $('#payment_tab_bank_account').hide();
+        $('#payment_tab_check_number').show();
+        $('#credit_card_fieldset').hide();
+        $('#bank_account_fieldset').hide();
+        break;
+      default:
+        $('#payment_tab_credit_card').hide();
+        $('#payment_tab_bank_account').hide();
+        $('#payment_tab_check_number').hide();
+        $('#credit_card_fieldset').hide();
+        $('#bank_account_fieldset').hide();
+    }
+  }
+
+  function populateScheduledDialog() {
+    $.get('/loans/scheduled_payments_for_payment_modal/<%= @loan.id -%>',null,function(returned_data) {
+      $('#scheduled_payments_dialog').html(returned_data);
+      $('#scheduled_payments_dialog').dialog('open');
+    });
+  }
+
+  $(document).ready(function() {
+
+    setPaymentMethodFields();
+
+    $('#scheduled_payment_draft_date').val('<%= Date.today.to_s(:mmddyyyy) -%>');
+
+    $('#extension').click(function() {
+      checked = $('#extension').attr('checked');
+      if (checked) {
+        $.post('/loans/extension_by_staff/<%= @loan.id -%>',null,function(returned_data) {
+          if (returned_data.substr(0,4) != '<td>') {
+            alert(returned_data);
+          } else {
+            $('#extension_row').html(returned_data);
+            $('#extension_row').show();
+            $('#extension').attr('disabled',true);
+          }
+        });
+      }
+    });
+    
+    $('#payment_plan').click(function() {
+      if ($('#payment_plan').attr('checked')) {
+        $.get('/loans/next_due_date_after/<%= @loan.id -%>','date=<%= @loan.due_date.to_s(:mmddyyyy) -%>',function(returned_date) {
+          $('#date_1').val(returned_date);
+        });
+        $('#payment_fields').hide();
+        $('#payment_plan_fields').show();
+      } else {
+        $('#payment_plan_fields').hide();
+        $('#payment_fields').show();
+      }
+    });
+
+    $('#payment_method').change(function () {
+      setPaymentMethodFields();
+    });
+
+    $('#scheduled_payment_draft_date').datepicker();
+
+    for (i=1;i<=10;i++) {
+      $('#date_'+i).datepicker();
+    }
+
+
+    $("#scheduled_payment_bank_account_id").change(function() {
+      if ($(this).val() == '') {
+        // Add New Account
+        $('#bank_account_fieldset').show();
+        $('#scheduled_payment_payment_account_id').attr('value','')
+      } else {
+        // Existing Account
+        $('#bank_account_fieldset').hide();
+        payment_id = $(this).val();
+        $('#scheduled_payment_payment_account_id').attr('value',payment_id)
+      }
+    });
+    $("#scheduled_payment_credit_card_id").change(function() {
+      if ($(this).val() == '') {
+        // Add New Account
+        $('#credit_card_fieldset').show();
+        $('#scheduled_payment_payment_account_id').attr('value','')
+      } else {
+        // Existing Account
+        $('#credit_card_fieldset').hide();
+        payment_id = $(this).val();
+        $('#scheduled_payment_payment_account_id').attr('value',payment_id)
+      }
+    });
+    
+
+    $("#write_down_dialog").dialog({
+            bgiframe: true,
+            autoOpen: false,
+            height: 350,
+            width: 300,
+            modal: true,
+            position: [350,100],
+            buttons: {
+                    'Submit': function() {
+                            $.post('/loans/write_down',$('#write_down_form').serialize(),function(returned_data) {
+                              if (returned_data != 'OK') {
+                                alert(returned_data);
+                              }
+                            });
+                            $(this).dialog('close');
+                            window.location.reload(true);
+                    },
+                    Cancel: function() {
+                            $(this).dialog('close');
+                    }
+            },
+            close: function() {
+            }
+    });
+
+    $("#scheduled_payments_dialog").dialog({
+            bgiframe: true,
+            autoOpen: false,
+            height: 400,
+            width: 400,
+            modal: true,
+            position: [350,100],
+            buttons: {
+                    'Delete Checked': function() {
+                            $.post('/loans/delete_checked_scheduled_payments',$('#delete_scheduled_payments_form').serialize());
+                            $(this).dialog('close');
+                    },
+                    Cancel: function() {
+                            $(this).dialog('close');
+                    }
+            },
+            close: function() {
+            }
+    });
+
+
+    $('#add_payment').click(function() {
+      if (num_payments < 10) {
+        $('#close_'+num_payments).hide();
+
+        last_payment_date = $('#date_'+num_payments).val();
+        
+        num_payments += 1;
+        $('#payment_'+num_payments).show();
+        $('#close_'+num_payments).show();
+        // Calculate sum of existing payments
+        total = 0;
+        for (i=1;i<=num_payments-1;i++) {
+          text_amount = $('#amount_'+i).val();
+          if (text_amount != null && text_amount.length > 0) {
+            total += parseFloat( text_amount);
+          }
+        }
+        remaining = payoff_amount - total;
+        remaining = Math.round(remaining*100)/100;
+        $('#amount_'+num_payments).val(remaining);
+        $.get('/loans/next_due_date_after/<%= @loan.id -%>','date='+last_payment_date,function(returned_date) {
+          $('#date_'+num_payments).val(returned_date);
+        });
+      }
+      if (num_payments >= 10) {
+        $('#add_payment_li').hide();
+      }
+    });
+
+    $('a.close_payment').click(function() {
+      $('#payment_'+num_payments).hide();
+      num_payments -= 1;
+      if (num_payments > 1) {
+        $('#close_'+num_payments).show();
+      }
+      if (num_payments < 10) {
+        $('#add_payment_li').show();
+      }
+    });
+
+    var num_payments = 1 ;
+    var payoff_amount = <%= number_with_precision(@loan.payoff_amount, :precision => 2) %>;
+    var remaining = <%= number_with_precision(@loan.payoff_amount, :precision => 2) %>;
+    $('#amount_1').val(remaining);
+    //$('#close_'+num_payments).show();
+
+  });
+</script>
+<% end %>
+<table>
+  <tbody>
+    <tr>
+      <td colspan="4"><span style="font-weight:bold">Current Loan Details:</span> Payoff Amount <%= number_to_currency(@loan.payoff_amount) -%></td>
+    </tr>
+    <tr>
+      <td><span style="font-weight:bold">Principal:</span> <%= number_to_currency(@loan.principal_owed) -%></td>
+      <td><span style="font-weight:bold">Interest:</span> <%= number_to_currency(@loan.interest_owed) -%></td>
+      <td><span style="font-weight:bold">Fees:</span> <%= number_to_currency(@loan.fees_owed) -%></td>
+      <td style="text-align:right"><%= link_to_function('Edit Loan Details',"$('#write_down_dialog').dialog('open');") -%></td>
+    </tr>
+  </tbody>
+</table>
+
+<table style="margin-top:20px">
+  <tbody>
+    <tr>
+      <td colspan="4"><span style="font-weight:bold">Next Scheduled Payment:</span> <%= next_scheduled_payment_date(@loan) -%></td>
+    </tr>
+    <tr>
+      <td><% if @next_scheduled_payment && current_user.role != User::GARNISHMENTS -%><span style="font-weight:bold">Principal:</span> <%= number_to_currency(@next_scheduled_payment.principal) -%><% end -%></td>
+      <td><% if @next_scheduled_payment && current_user.role != User::GARNISHMENTS -%><span style="font-weight:bold">Interest:</span> <%= number_to_currency(@next_scheduled_payment.interest) -%><% end -%></td>
+      <td><% if @next_scheduled_payment && current_user.role != User::GARNISHMENTS -%><span style="font-weight:bold">Fees:</span> <%= number_to_currency(@next_scheduled_payment.fees) -%><% end -%></td>
+      <td style="text-align:right">
+        <%= link_to('History', {:action => :loan_activity, :id => @loan.id}, :rel => 'facebox') -%>
+        &nbsp;|&nbsp;
+        <%= link_to_function('Scheduled',"populateScheduledDialog();") %>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4">
+        <form>
+          <input type="checkbox" id="extension" name="extension"/> Extension
+        </form>
+      </td>
+    </tr>
+    <tr id="extension_row" style="display:none">
+    </tr>
+  </tbody>
+</table>
+
+    <%= display_flash(flash) %>
+
+  <% form_for_using_SSL_in_prod :scheduled_payment, :url => { :action => :payment }, :html => { :style => "margin-top:20px"} do |f| %>
+    <%= f.hidden_field :loan_id, :value => @loan.id %>
+    <%= f.hidden_field :customer_id, :value => @loan.customer_id %>
+  <div>
+    <span style="font-weight:bold">Enter Payment</span>
+    <input type="checkbox" name="payment_plan" id="payment_plan"/> Payment Plan
+  </div>
+
+  <div style="margin-top:10px">
+    <div id="payment_method_div" style="float:left">
+        <span style="font-weight:bold;">Type</span>
+        &nbsp;
+        <select id="payment_method" name="payment_method">
+          <option value="">please select</option>
+          <option value="bank_account">ACH</option>
+          <option value="credit_card">Bank Card</option>
+          <option value="check">Check</option>
+        </select>
+    </div>
+
+    <div id="payment_tab_bank_account" style="margin-left:20px;float:left;display:none">
+        <span style="font-weight:bold;">Bank Account</span>
+        &nbsp;
+        <%= f.select :bank_account_id, @loan.customer.payment_accounts.bank_accounts.map {|pa|[pa.account.description, pa.id]} << ['Add New Bank Account',''] %>
+    </div>
+
+    <div id="payment_tab_credit_card" style="margin-left:20px;float:left;display:none">
+        <span style="font-weight:bold;">Bankcard</span>
+        &nbsp;
+       <%= f.select :credit_card_id, @loan.customer.payment_accounts.credit_cards.collect {|pa|[pa.account.description, pa.id]} << ['Add New Credit Card',''] %>
+    </div>
+
+    <div id="payment_tab_check_number" style="margin-top:5px;margin-left:20px;float:left;display:none">
+        <span style="font-weight:bold;">Check Number</span>
+        &nbsp;
+        <%= f.text_field :check_number, :size => 12, :maxlength => 10 -%>
+    </div>
+
+    <div class="clear"></div>
+  </div>
+
+
+<fieldset id="bank_account_fieldset" style="display:none;border:2px solid #d0d0d0;padding:0 10px 20px 10px">
+  <legend style="padding:5px 5px 0">New Bank Account Information</legend>
+  <div id="bank_account_info">
+    <p>
+      <%= f.label :bank_name, "Bank Name", :style => 'width:180px' %>
+      <%= f.text_field :bank_name, :maxlength => 30 %>
+    </p>
+    <p>
+      <%= f.label :bank_account_number, "Bank Account Number", :style => 'width:180px' %>
+      <%= f.text_field :bank_account_number, :maxlength => 20 %>
+    </p>
+    <p>
+      <%= f.label :bank_aba_number, "Bank Routing Number", :style => 'width:180px' %>
+      <%= f.text_field :bank_aba_number, :maxlength => 9 %>
+    </p>
+    <p>
+      <%= f.label :bank_account_type, "Bank Account Type", :style => 'width:180px' %>
+      <%= f.select :bank_account_type, [['Checking','CHECKING'], ['Savings','SAVINGS']], {:include_blank => true} %>
+    </p>
+  </div>
+</fieldset>
+
+<fieldset id="credit_card_fieldset" style="display:none;border:2px solid #d0d0d0;padding:0 10px 20px 10px">
+  <legend style="padding:5px 5px 0">Credit Card Information</legend>
+  <div id="credit_card_info">
+    <p>
+      <%= f.label :card_number %>
+      <%= f.text_field :card_number, :size => 16, :maxlength => 16 %>
+    </p>
+    <p>
+      <%= f.label :expires %>
+      <%#= f.text_field :expires, :maxlength => 5 %>
+      <%= f.select :expires_month, [['Jan',1],['Feb',2],['Mar',3],['Apr',4],['May',5],['Jun',6],['Jul',7],['Aug',8],['Sep',9],['Oct',10],['Nov',11],['Dec',12]] %>
+      <%= f.select :expires_year, [2010,2011,2012,2013,2014,2015,2016] %>
+    </p>
+    <p>
+      <%= f.label :cvv, '3 Digit Security Code' %>
+      <%= f.text_field :cvv, :maxlength => 3 %>
+    </p>
+    <p>
+      <%= f.label :name_on_card %>
+      First <%= f.text_field :first_name, :maxlength => 20 %> Last <%= f.text_field :last_name, :maxlength => 20 %>
+    </p>
+    <p>
+      <%= f.label :card_billing_address %>
+      <%= f.text_field :card_billing_address, :maxlength => 50 %>
+    </p>
+    <p>
+      <%= f.label :card_billing_zip %>
+      <%= f.text_field :card_billing_zip, :maxlength => 10 %>
+    </p>
+  </div>
+</fieldset>
+
+
+
+
+
+
+  <div id="payment_fields" style="margin-top:10px">
+    <div>
+      <span style="font-weight:bold">Amount</span> <%= f.text_field :amount, :size => 8, :maxlength => 10 -%>
+      <span style="margin-left:20px;font-weight:bold">Date</span> <%= f.text_field :draft_date, :size => 12, :maxlength => 10 -%>
+      <input type="checkbox" name="principal_only" value="1"/> Principal Only*
+    </div>
+
+    <div style="margin-top:10px;font-size:11px;font-style:italic;color:#aaa">
+      *Unless borrower elects to make a principal-only payment, payments are applied first to outstanding fees, then interest, then principal.
+    </div>
+  </div>
+
+  <div id="payment_plan_fields" style="margin-top:10px;display:none;">
+    <ul>
+      <% for i in 1..10 %>
+      <li id="payment_<%= i -%>" style="background:none;<% if i > 1 %>display:none<% end %>">
+        <div style="float:left;width:160px;">
+          Amount&nbsp;<input type="text" name="amount_<%= i -%>" id="amount_<%= i -%>" size="8" maxlength="6"/>
+        </div>
+        <div style="float:left;width:150px;">
+          Date&nbsp;<input type="text" name="date_<%= i -%>" id="date_<%= i -%>" size="12" maxlength="10"/>
+        </div>
+        <div style="float:left;width:20px;">
+          <a href="#" id="close_<%= i -%>" class="close_payment" <% if i == 1 %>style="display:none"<% end %>><%= image_tag 'icons/cross.png', :style => 'vertical-align:bottom;padding-left:8px;padding-bottom:2px;' %></a>
+        </div>
+        <div class="clear"></div>
+      </li>
+      <% end %>
+      <li id="add_payment_li" style="background:none">
+      <a href="#" id="add_payment"><%= image_tag 'icons/plus.png' %>&nbsp;Add Payment</a>
+      </li>
+    </ul>
+  </div>
+
+  <div style="margin-top:10px;text-align:right;">
+    <input type="submit" value="Submit Payment/Plan" />
+  </div>
+<% end %>
+
+<div id="write_down_dialog" title="Write Down Interest and/or Fees" style="display:none">
+  <div>
+    <% form_for :loan, :html => { :id => 'write_down_form'} do |f| %>
+      <%= hidden_field_tag :id, @loan.id %>
+      <fieldset>
+        <% if current_user.manager %>
+        <p>
+          <%= f.label :principal %>
+          <%= f.text_field :principal_owed, :size => 10, :maxlength => 7 %>
+        </p>
+        <% end %>
+        <p>
+          <%= f.label :interest %>
+          <%= f.text_field :interest_owed, :size => 10, :maxlength => 7 %>
+        </p>
+        <p>
+          <%= f.label :fees %>
+          <%= f.text_field :fees_owed, :size => 10, :maxlength => 7 %>
+        </p>
+        <p>
+          <%= f.label :memo %>
+          <%= text_field_tag :memo, nil, :size => 30 %>
+        </p>
+      </fieldset>
+    <% end %>
+  </div>
+</div>
+
+<div id="scheduled_payments_dialog" class="modal-content" title="Scheduled Payments" style="display:none">
+</div>

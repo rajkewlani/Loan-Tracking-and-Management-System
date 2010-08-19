@@ -1,0 +1,213 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag 'custom' %>
+  <%#= javascript_include_tag 'jquery.inplace.pack','jquery.livequery' %>
+  <script type="text/javascript">
+
+    var timer = null;
+    var customer_utc_offset_hours = null;
+    var customer_utc_offset_milliseconds = null;
+
+    function start(){
+      d = new Date();
+      localTime = d.getTime();
+      localOffset = d.getTimezoneOffset() * 60000;
+      utc = localTime + localOffset;
+      customer_local_time = utc + customer_utc_offset_milliseconds
+      time = new Date(customer_local_time);
+      var hours = time.getHours();
+      var minutes = time.getMinutes();
+      minutes=((minutes < 10) ? "0" : "") + minutes;
+      var seconds = time.getSeconds();
+      seconds=((seconds < 10) ? "0" : "") + seconds;
+      if (hours < 8 || hours > 21)
+      {
+        $('#timer').css({"color":"red"});
+      }
+      am_pm = 'am';
+      if (hours > 12) {
+        hours = hours - 12;
+        am_pm = 'pm';
+      }
+      if (hours == 0) {
+        hours = 12;
+      }
+      var clock = hours + ":" + minutes + " " + am_pm;
+
+      $('#timer').html(clock);          
+      timer = setTimeout("start()",1000);
+    }
+
+    var tzo=(new Date().getTimezoneOffset()/60)*(-1); 
+    $(document).ready(function() {
+
+      $.get("/loans/utc_offset_hours/<%= @loan.id -%>",null,function(offset_hours_str) {
+        customer_utc_offset_hours = parseInt(offset_hours_str);
+        customer_utc_offset_milliseconds = customer_utc_offset_hours * 3600000;
+        start();
+      });
+
+      $("#garnishment_set_date").datepicker();
+      $("#loan_aasm_state").change(function(){
+        disposition_val = $(this).val();
+        $.post("/loans/set_loan_disposition_from_collections/<%= @loan.id %>","aasm_state="+ $("#loan_aasm_state").val(),function(value){
+          //$('#link_for_garnishment').html(value);
+          window.location = '/my_loans';
+        }); // post
+      }); // change
+
+      <% if current_user.role == 'administrator' %>
+      $('#aasm_state_edit_link').click(function() {
+        $('#display_aasm_state').hide();
+        $('#admin_editable_aasm_state').show();
+      });
+
+      $('#aasm_state_form').submit(function() {
+        $.post('/loans/set_aasm_state/<%= @loan.id -%>',$(this).serialize(),function() {
+          window.location.reload(true);
+        });
+        return false;
+      });
+
+      $('#aasm_state_form_cancel').click(function() {
+        $('#admin_editable_aasm_state').hide();
+        $('#display_aasm_state').show();
+      });
+      <% end %>
+
+      $("#reminder_dialog").dialog({
+              bgiframe: true,
+              autoOpen: false,
+              height: 350,
+              width: 300,
+              modal: true,
+              position: [350,100],
+              buttons: {
+                      'Submit': function() {
+                              $.post('/reminders',$('#reminder_form').serialize(),function(returned_data) {
+                                if (returned_data != 'OK') {
+                                  alert(returned_data);
+                                }
+                                window.location.reload(true);
+                              });
+                              $(this).dialog('close');
+                      },
+                      Cancel: function() {
+                              $(this).dialog('close');
+                      }
+              },
+              close: function() {
+              }
+      });
+
+    }); // doc ready
+  </script>
+<% end %>
+
+
+<% title(@loan.customer.full_name) %>
+
+<div id="reject_status" style="height:35px;">
+  <div id="display_aasm_state" style="color:green;font-size:18px;font-weight:bold;float:left">
+    <% if current_user.role == 'administrator' %>
+      <a href="#" id="aasm_state_edit_link" title="Click to change"><%= @loan.aasm_state -%></a>
+    <% else %>
+      <%= @loan.aasm_state -%>
+    <% end %>
+  </div>
+  <% if current_user.role == 'administrator' %>
+  <div id="admin_editable_aasm_state" style="float:left;display:none">
+    <% form_for :loan, :html => {:id => 'aasm_state_form'} do |f| %>
+      <%= f.select :aasm_state, @aasm_state_options %>
+      <%= f.submit 'Submit' %>
+      <a href="#" id="aasm_state_form_cancel">Cancel</a>
+    <% end %>
+  </div>
+  <% end %>
+  <div style="float: right;text-align:right">
+      <div>Local Time: <span id="timer"></span></div>
+      <%= link_to_function('New Reminder',"$('#reminder_dialog').dialog('open');", :style => 'margin-right:10px') -%>
+    <% if ['pending_signature','underwriting'].include? @loan.aasm_state %>
+      <a href="#"<% if @current_tab == "summary" %> class="default-tab"<% end %> onclick="ShowWithReject('summary')" rel="history">Reject Loan</a>
+    <% end %>
+    <% if @can_be_rescinded %>
+      <a href="/loans/request_recission/<%= @loan.id -%>"<% if @current_tab == "summary" %> class="default-tab"<% end %>  rel="history">Rescind Loan</a>
+    <% end %>
+
+    <% if (['collections'].include? current_user.role) && @loan.aasm_state == 'collections'%>
+      <div id="link_for_garnishment">
+        Disposition of loan : <%= select  "loan","aasm_state",Loan::LOAN_DISPOSITIONS %>
+      </div>
+    <% end %>
+  </div>
+</div>
+<div class="content-box" style="min-width: 650px;">
+  <div class="content-box-header">
+    <ul class="content-box-tabs">
+      <li id="tab_summary"><a  id="summary_link" href="#summary"<% if @current_tab == "summary" %> class="default-tab"<% end %> onclick="ShowHideTab('summary')" rel="history">Summary</a></li>
+      <li id="tab_personal"><a id="personal_link" href="#personal"<% if @current_tab == "personal" %> class="default-tab"<% end %> onclick="ShowHideTab('personal')" rel="history"><span id="verified_personal_checkmark"><% if @loan.verified_personal == 1 %>&#8730; <% end %></span>Personal</a></li>
+      <li id="tab_financial"><a id="financial_link" href="#financial"<% if @current_tab == "financial" %> class="default-tab"<% end %> onclick="ShowHideTab('financial')" rel="history"><span id="verified_financial_checkmark"><% if @loan.verified_financial == 1 %>&#8730; <% end %></span>Financial</a></li>
+      <li id="tab_employment"><a id="employment_link" href="#employment"<% if @current_tab == "employment" %> class="default-tab"<% end %> onclick="ShowHideTab('employment')" rel="history"><span id="verified_employment_checkmark"><% if @loan.verified_employment? == 1 %>&#8730; <% end %></span>Employment</a></li>
+      <li id="tab_tila"><a id="tila_link" href="#tila"<% if @current_tab == "tila" %> class="default-tab"<% end %> onclick="ShowHideTab('tila')" rel="history"><span id="verified_tila_checkmark"><% if @loan.verified_tila == 1 %>&#8730; <% end %></span>TILA</a></li>
+      <% if current_user.is_underwriter? %><li><a id="factor_trust_link" href="#factor_trust"<% if @current_tab == "factor_trust" %> class="default-tab"<% end %> onclick="ShowHideTab('factor_trust')"  rel="history">Factor Trust</a></li><% end %>
+      <% if not current_user.is_underwriter? %><li><a id="payment_link" href="#payment"<% if @current_tab == "payment" %> class="default-tab"<% end %> onclick="ShowHideTab('payment')"  rel="history">Payment</a></li><%end%>
+      <li><a id="comments_link" href="#comments_tab"<% if @current_tab == "comments" %> class="default-tab"<% end %> onclick="ShowHideTab('comments_tab')" rel="history">Comments</a></li>
+      <li><a id="logs_link" href="#logs"<% if @current_tab == "logs" %> class="default-tab"<% end %> onclick="ShowHideTab('logs')" rel="history">Logs</a></li>
+      <li><a id="documents_link" href="#documents"<% if @current_tab == "documents" %> class="default-tab"<% end %> onclick="ShowHideTab('documents')" rel="history">Documents</a></li>
+    </ul>
+    <div class="clear"></div>
+  </div>
+<%#= render :partial => "remark_dropdown"   %>
+  <div class="content-box-content">
+
+    <div class="tab-content<% if @current_tab == "summary" %> default-tab<% end %>" id="summary">
+      <%= render :partial => "summary", :locals => { :loan => @loan, :customer => @loan.customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "personal" %> default-tab<% end %>" id="personal">
+      <%= render :partial => "personal", :locals => { :loan => @loan, :customer => @loan.customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "financial" %> default-tab<% end %>" id="financial">
+      <%= render :partial => "financial", :locals => { :loan => @loan, :customer => @loan.customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "employment" %> default-tab<% end %>" id="employment">
+      <%= render :partial => "employment", :locals => { :loan => @loan, :customer => @loan.customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "tila" %> default-tab<% end %>" id="tila">
+      <%= render :partial => "tila", :locals => { :loan => @loan, :customer => @loan.customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "comments" %> default-tab<% end %>" id="comments_tab">
+      <%= render :partial => "comment", :locals => { :loan => @loan, :customer => @loan.customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "logs" %> default-tab<% end %>" id="logs">
+      <%= render :partial => "logs", :locals => { :loan => @loan, :customer => @loan.customer } %>
+    </div>
+    <% if current_user.is_underwriter? %>
+      <div class="tab-content<% if @current_tab == "factor_trust" %> default-tab<% end %>" id="factor_trust">
+        <%= render :partial => "factor_trust", :locals => { :loan => @loan, :customer => @loan.customer } %>
+      </div>
+    <% end %>
+    <% if @loan.total_owed > 0 && !current_user.is_underwriter? %>
+      <div class="tab-content<% if @current_tab == "payment" %> default-tab<% end %>" id="payment">
+        <%= render :partial => "payment", :locals => {:loan => @loan, :customer => @loan.customer,:loan_transaction=>@loan_transaction} %>
+      </div>
+    <% end %>
+    <div class="tab-content<% if @current_tab == "documents" %> default-tab<% end %>" id="documents">
+      <%= render :partial => "documents", :locals => { :document => @document} %>
+    </div>
+  </div>
+</div>
+
+<div id="reminder_dialog" class="modal-content" title="Create Reminder" style="display:none">
+    <% form_for :reminder, :html => { :id => 'reminder_form'} do |f| %>
+      <%= f.hidden_field :loan_id, :value => @loan.id %>
+      <fieldset>
+        <p>
+          <%= f.label :remind_on %>
+          <%= f.date_select :remind_on, :order => [:month, :day, :year] %>
+        </p>
+        <p>
+          <%= f.label :comment %>
+          <%= f.text_area :comment, :rows => 7, :cols => 30 %>
+        </p>
+      </fieldset>
+    <% end %>
+</div>

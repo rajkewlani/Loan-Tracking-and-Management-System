@@ -1,0 +1,12 @@
+<div id="logs_block">
+  <%= display_flash(flash) %>
+
+  <table class="tiny_table">
+    <% loan.logs.each do |log| %>
+      <tr>
+        <td nowrap><%= log.created_at.strftime("%a %B %d, %Y %I:%M%p") %></td>
+        <td class="last"><%= h log.message %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

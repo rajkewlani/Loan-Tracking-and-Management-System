@@ -1,0 +1,4 @@
+<% form_tag '/loans/allocate_check_number', :id => 'edit_check_number_form' do %>
+  <%= hidden_field_tag :id, params[:id] %>
+  <%= text_field_tag "check_number_field",(params[:check_number].to_s), :size => 9, :maxlength => 9 %>
+<% end %>
