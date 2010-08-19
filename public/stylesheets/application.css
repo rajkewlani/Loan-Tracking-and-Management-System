@@ -1,0 +1,318 @@
+.pagination span.current {
+  border-top-width: 1px;
+  border-right-width-value: 1px;
+  border-right-width-ltr-source: physical;
+  border-right-width-rtl-source: physical;
+  border-bottom-width: 1px;
+  border-left-width-value: 1px;
+  border-left-width-ltr-source: physical;
+  border-left-width-rtl-source: physical;
+  border-top-style: solid;
+  border-right-style-value: solid;
+  border-right-style-ltr-source: physical;
+  border-right-style-rtl-source: physical;
+  border-bottom-style: solid;
+  border-left-style-value: solid;
+  border-left-style-ltr-source: physical;
+  border-left-style-rtl-source: physical;
+  border-top-color: #dddddd;
+  border-right-color-value: #dddddd;
+  border-right-color-ltr-source: physical;
+  border-right-color-rtl-source: physical;
+  border-bottom-color: #dddddd;
+  border-left-color-value: #dddddd;
+  border-left-color-ltr-source: physical;
+  border-left-color-rtl-source: physical;
+  background-color: #469400;
+  background-image: url(../images/bg-button-green.gif);
+  background-repeat: repeat-x;
+  background-attachment: scroll;
+  background-position: left top;
+  border: 1px solid #459300;
+  color: #ffffff;
+}
+.pagination a {
+  padding-left: 6px;
+  border: 1px solid #ddd;
+}
+.pagination a, .pagination span {
+  margin: 0pt 5px 0pt 0pt;
+  padding: 3px 9px;
+}
+.pagination a:focus {
+  outline-color: -moz-use-text-color;
+  outline-style: none;
+  outline-width: 1px;
+}
+.pagination a.next_page, .pagination a.prev_page {
+  border: 0px;
+}
+form label {
+  display: block;
+  padding-top: 0pt;
+  padding-right: 0pt;
+  padding-bottom: 0pt;
+  padding-left: 0pt;
+  margin: 0px;
+  font-weight: bold;
+}
+.tiny-input {
+  width: 80px !important;
+}
+#search_box {
+  margin: 0px 0px 15px 15px;
+  background: url(/images/search_box.png) top left no-repeat;
+  width: 191px;
+  height: 33px;
+}
+#search_box input {
+  border: 0px;
+  background: transparent;
+  width: 165px;
+  padding: 5px;
+  font-size: 17px;
+  line-height: 32px;
+  color: #3A3A3A;
+}
+ul.show_details {
+  margin: 0px;
+  padding: 0px;
+  font-size: 14px;
+  color: #000;
+}
+ul.show_details li {
+  list-style: none;
+  clear: both;
+  background-image: none !important;
+}
+ul.show_details li.even {
+  background-color: #F7F7F7 !important;
+}
+ul.show_details li:hover {
+  background-color: #FFF9CC !important;
+}
+ul.show_details li label {
+  width: 200px;
+  float: left;
+  text-align: right;
+  font-weight: bold;
+  margin-right: 10px;
+  color: #555555;
+}
+div.comment_container {
+  border-top: 1px solid #d0d0d0;
+}
+div.comment_container div.comment_header {
+  background-color: #efefef;
+  font-size: 20px;
+  padding: 2px 2px 0 3px;
+}
+div.comment_container div.comment_header div.gravatar {
+  float: left;
+  width: 35px;
+}
+div.comment_container div.comment_header div.author {
+  float: left;
+  padding: 3px 5px 6px 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+div.comment_container div.comment_header div.datetime {
+  float: right;
+  padding: 3px 5px 6px 5px;
+  font-size: 14px;
+}
+
+div.comment_container div.comment_body {
+  font-size: 13px;
+  padding: 5px 5px 10px 5px;
+  line-height: 16px;
+}
+table.tiny_table {
+  border-collapse: collapse;
+  margin: 0px;
+  padding: 0px;
+}
+table.tiny_table td {
+  font-size: 12px;
+  font-weight: normal;
+  padding: 2px 10px 2px 2px !important;
+  margin: 0px !important;
+}
+table.tiny_table td.last {
+  padding-right: 2px !important;
+}
+td.icons {
+  text-align: right;
+}
+#filters_bar {
+  background: #717171 url(/images/bg-filters.png) top left repeat-x;
+  color: #fff;
+  padding: 5px;
+}
+#filters_bar ul {
+  margin: 0px !important;
+  padding: 0px !important;
+}
+#filters_bar ul li {
+  float: left;
+  margin: 0px !important;
+  padding: 0px !important;
+  margin-right: 10px !important;
+  margin-right: 10px !important;
+  background-image: none !important;
+}
+#filters_toggle {
+  display: block;
+  height: 20px;
+  width: 65px;
+  background: url(/images/icn-filters.png) 0px -20px no-repeat;
+}
+#filters_toggle.on {
+  background-position: 0px 0px;
+}
+.small {
+  font-size: 12px !important;
+}
+th.very_small {
+  font-size: 11px !important;
+}
+th.center, td.center {
+  text-align: center !important;
+}
+div.check_mark_on {
+  width: 18px;
+  height: 18px;
+  border: 0px;
+  background: url(/images/check_mark.png) 0px 0px no-repeat;
+}
+div.check_mark_off {
+  width: 18px;
+  height: 18px;
+  border: 0px;
+  background: url(/images/check_mark.png) 0px -18px no-repeat;
+}
+div.check_mark_na {
+  width: 18px;
+  height: 18px;
+  border: 0px;
+  background: url(/images/check_mark.png) 0px -36px no-repeat;
+}
+ul.sub-tab-content {
+  margin: 0px !important;
+  padding: 0px !important;
+  border-bottom: 1px solid #d0d0d0;
+}
+ul.sub-tab-content li {
+  float: left;
+  margin: 0px 0px 5px 10px !important;
+  padding: 0px 0px 0px 10px !important;
+  border-left: 1px solid #d0d0d0;
+  list-style: none !important;
+  background-image: none !important;
+}
+ul.sub-tab-content li.first {
+  margin: 0px !important;
+  padding: 0px !important;
+  border-left: 0px !important;
+}
+ul.sub-tab-content li.current-tab {
+  font-weight: bold;
+  color: #000;
+}
+ul.sub-tab-content li.sub-tab {
+  cursor: pointer;
+  display: block;
+}
+ul.sub-tab-content li.sub-tab:hover {
+  color: green;
+}
+div.sub-tab-content {
+  padding: 10px;
+}
+div.default-sub-tab {
+  display: block !important;
+}
+.gray {
+  color: #A9A9A9;
+}
+.green {
+  color: green !important;
+}
+.in_place_editor_field {
+  cursor: pointer;
+}
+img.tooltip {
+  cursor: help;
+}
+.eight_hundred {
+  width: 800px;
+}  
+.nine_hundred {
+  width: 920px;
+}
+table.popup_table {
+  border-collapse: collapse;
+}
+table.popup_table th, table.popup_table td {
+  padding: 2px;
+}
+table.popup_table th {
+  font-weight: bold;
+}
+table.popup_table td {
+  border: 1px solid #d0d0d0;
+}
+table.tight {
+  margin-bottom: 15px;
+}
+table.tight th, table.tight td {
+  padding: 2px 4px !important;
+}
+
+#worksheet th, #worksheet td {
+  padding: 2px !important;
+}
+#worksheet td {
+  line-height: 32px !important;
+  font-size: 14px !important;
+}
+#worksheet td img {
+  margin-top: 4px !important;
+  margin-bottom: -6px !important;
+}
+
+
+ul.personal_details {
+  margin: 0px;
+  padding: 0px;
+  font-size: 14px;
+  color: #000;
+}
+ul.personal_details li {
+  list-style: none;
+  clear: both;
+  background-image: none !important;
+}
+ul.personal_details li.even {
+  background-color: #F7F7F7 !important;
+}
+ul.personal_details li:hover {
+  background-color: #FFF9CC !important;
+}
+ul.personal_details li label {
+  width:135px;
+  float: left;
+  text-align: right;
+  font-weight: bold;
+  margin-right: 10px;
+  color: #555555;
+}
+
+table.personal_section td {
+  padding: 0px 0px 0px 0px !important;
+  height:auto;
+  margin: 0px !important;
+  border-bottom-style:hidden;
+  width:50%
+}

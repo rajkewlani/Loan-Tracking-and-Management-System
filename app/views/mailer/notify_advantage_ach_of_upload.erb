@@ -1,0 +1,25 @@
+<%#  summary = @ach_batch.summary %>
+Company: FloBridge
+
+ACRO: <%= ADVANTAGE_ACH_CONFIG[:login_id] %>
+Delivered: <%= Date.today %>
+File Name = <%= @ach_batch.file_name %>
+EEntry Date = <%= Date.next_business_day %>
+
+Credit Item Count = <%= @ach_batch.credits %>
+Dollar Amount = <%= number_with_precision(@ach_batch.credit_amount, :precision => 2) %>
+
+Debit Item Count = <%= @ach_batch.debits %>
+Dollar Amount = <%= number_with_precision(@ach_batch.debit_amount, :precision => 2) %>
+
+Contact
+
+Name: <%= @ach_batch.ach_provider.primary_contact_name %>
+Phone: <%= @ach_batch.ach_provider.primary_contact_name %>
+Email: <%= @ach_batch.ach_provider.primary_contact_email %>
+
+Alternate Contact
+
+Name: <%= @ach_batch.ach_provider.alternate_contact_name %>
+Phone: <%= @ach_batch.ach_provider.alternate_contact_name %>
+Email: <%= @ach_batch.ach_provider.alternate_contact_email %>

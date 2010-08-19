@@ -1,0 +1,41 @@
+<p>
+  <strong>Instructions:</strong> Contact a person at the customer's workplace to verify their employment status.
+</p>
+
+<div class="notification information png_bg">
+  <div>
+    Employer Name: <strong><%= customer.employer_name %></strong><br/>
+    Employer Phone: <strong><%= number_to_phone(customer.employer_phone) %></strong><br/>
+    Supervisor Name: <strong><%= customer.supervisor_name %></strong><br/>
+    Supervisor Phone: <strong><%= number_to_phone(customer.supervisor_phone) %></strong>
+  </div>
+</div>
+
+<div style="padding: 5px 20px;">
+  <% form_tag :action => "verify_employment_status" do %>
+    <fieldset>
+    	<p>
+    	  <%= label :spoke_with, "I confirmed employment with" %>
+    		<%= text_field_tag :spoke_with, "", :class => "text-input medium-input" %>
+    	</p>
+    	<p>
+    	  <%= label :months_employed, "and verified the customer has been employed for" %>
+    		<%= text_field_tag :months_employed, "", :class => "text-input tiny-input" %> months 
+    		(customer says <%= customer.months_employed %> months)
+    	</p>
+    	<p>
+    	  <%= label :notes, "Notes" %>
+    		<%= text_area_tag :notes, "", :class => "text-input medium-input" %>
+    	</p>
+    	<p>
+    	  <%= label :confirm, "Confirm employment status as" %>
+    	  <select name="confirm" class="text-input medium-input">
+    	    <option value=""></option>
+    	    <option value="correct">Correct</option>
+    	    <option value="incorrect">Incorrect</option>
+    	    <option value="not_applicable">Not Applicable</option>
+    	  </select>
+    	</p>
+    </fieldset>
+  <% end %>
+</div>

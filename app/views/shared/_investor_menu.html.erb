@@ -1,0 +1,121 @@
+          <ul id="main-nav">  <!-- Accordion Menu -->
+
+            <li><%= link_to "Dashboard", root_path, :class => "nav-top-item no-submenu #{controller.controller_name == 'dashboard' ? 'current' : ''}" %></li>
+            <li>
+              <%= link_to "Loans", "#", :class => "nav-top-item #{controller.controller_name == 'loans' ? 'current' : ''}" %>
+              <ul>
+                <% if ["underwriter","collections","garnishments"].include? current_user.role %>
+                  <li>
+                    <%= link_to "My Loans", my_loans_path,
+                      :class => (((["my_loans"].include? controller.action_name) &&
+                          (["loans"].include? controller.controller_name)) ? "current" : "") %>
+                  </li>
+                <% end %>
+                <li>
+                  <%= link_to "Loan List", loans_path,
+                    :class => (((["index"].include? controller.action_name) &&  (["loans"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+                <li>
+                  <%= link_to "Add a new Customer", new_customer_path,
+                    :class => ((["new"].include? controller.action_name) ? "current" : "") %>
+                </li>
+              </ul>
+            </li>
+            <% if current_user.role == 'administrator' %>
+              <li><%= link_to "Teams", "#", :class => "nav-top-item #{(["teams"].include? controller.controller_name) ? 'current' : ''}"  %>
+                <ul>
+                  <li><%= link_to "Teams", teams_path,
+                      :class => ((["teams"].include? controller.controller_name) ? "current" : "") %></li>
+                </ul>
+              </li>
+            <%end%>
+            <li><%= link_to "Transactions", root_path, :class => "nav-top-item" %></li>
+
+            <li><%= link_to "Reports", "3", :class => "nav-top-item #{controller.controller_name == 'reports' ? 'current' : ''}" %>
+              <ul>
+
+                <li>
+                  <%= link_to "Marketing", marketing_path,
+                    :class => (((["marketing"].include? controller.action_name) &&
+                        (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+                <li>
+                  <%= link_to "Portfolio", portfolio_path,
+                    :class => (((["portfolio"].include? controller.action_name) &&
+                        (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+                <li>
+                  <%= link_to "Financial", financial_path,
+                    :class => (((["financial"].include? controller.action_name) &&
+                        (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+
+                <li>
+                  <% if current_user.role == 'administrator'%>
+                    <%= link_to "Performance", performance_path,
+                      :class => (((["performance"].include? controller.action_name) &&
+                          (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                  <%end%>
+
+                  <% if current_user.role == 'underwriter' %>
+                    <%= link_to "Performance", performance_path,
+                      :class => (((["performance"].include? controller.action_name) &&
+                          (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                  <%end%>
+
+                  <% if current_user.role == 'collections' %>
+                    <%= link_to "Performance", collection_performance_path,
+                      :class => (((["collection_performance"].include? controller.action_name) &&
+                          (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                  <%end%>
+
+                  <% if current_user.role == 'garnishments' %>
+                    <%= link_to "Performance", garnishments_performance_path,
+                      :class => (((["garnishments_performance"].include? controller.action_name) &&
+                          (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                  <%end%>
+
+                </li>
+                <li>
+                  <%= link_to "Investors", investors_path,
+                    :class => (((["investors"].include? controller.action_name) &&
+                        (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+              </ul>
+            </li>
+
+            <%if ["administrator"].include? current_user.role %>
+              <li>
+                <%= link_to "Settings", "#",
+                  :class => "nav-top-item #{(["lead_filters", "lead_providers", "users", "locations"].include? controller.controller_name) ? 'current' : ''}" %>
+                <ul>
+
+                  <li><%= link_to "Locations", locations_path,
+                      :class => ((["locations"].include? controller.controller_name) ? "current" : "") %></li>
+                  <li><%= link_to "High Risk Branches", high_risk_bank_branches_path,
+                      :class => ((["high_risk_bank_branches"].include? controller.controller_name) ? "current" : "") %></li>
+                  <li><%= link_to "User Accounts", users_path,
+                      :class => ((["users"].include? controller.controller_name) ? "current" : "") %></li>
+                  <li><%= link_to "Lead Submission Filters", lead_filters_path,
+                      :class => ((["lead_filters"].include? controller.controller_name) ? "current" : "") %></li>
+                  <li><%= link_to "Lead Providers", lead_providers_path,
+                      :class => ((["lead_providers"].include? controller.controller_name) ? "current" : "") %></li>
+                  <li><%= link_to "Mail Templates", mail_templates_path,
+                      :class => ((["mail_templates"].include? controller.controller_name) ? "current" : "") %></li>
+				   <li><%= link_to "Portfolio", admin_portfolios_path,
+                      :class => ((["admin_portfolio"].include? controller.controller_name) ? "current" : "") %></li>
+                </ul>
+              </li>
+            <% elsif current_user.manager==true %>
+              <li>
+                <%= link_to "Team", "#",:class => "nav-top-item #{(["users"].include? controller.controller_name) ? 'current' : ''}" %>
+                <ul>
+                  <li><%= link_to "Team Availability", {:controller=>:users,:action=>:team_availability},
+                      :class => ((["mail_templates"].include? controller.action_name) ? "team_availability" : "") %></li>
+                </ul>
+              </li>
+            <%end%>
+            <li><%= link_to "ACH", root_path, :class => "nav-top-item" %></li>
+            <li><%= link_to "Help", root_path, :class => "nav-top-item" %></li>
+
+          </ul> <!-- End #main-nav -->

@@ -1,0 +1,47 @@
+<% title(@customer.full_name) %>
+<% subtitle("Central hub of information for this customer") %>
+
+<div class="content-box" style="min-width: 650px;">
+	<div class="content-box-header">
+	  
+	  <ul class="content-box-tabs">
+	    <li><a href="#summary"<% if @current_tab == "summary" %> class="default-tab"<% end %> rel="history">Summary</a></li>
+			<li><a href="#personal"<% if @current_tab == "personal" %> class="default-tab"<% end %> rel="history"><% if @customer.verified_personal == 1 %>&#8730; <% end %>Personal</a></li>
+			<li><a href="#financial"<% if @current_tab == "financial" %> class="default-tab"<% end %> rel="history"><% if @customer.verified_financial == 1 %>&#8730; <% end %>Financial</a></li>
+			<li><a href="#employment"<% if @current_tab == "employment" %> class="default-tab"<% end %> rel="history"><% if @customer.verified_employment == 1 %>&#8730; <% end %>Employment</a></li>
+			<li><a href="#tila"<% if @current_tab == "tila" %> class="default-tab"<% end %> rel="history"><% if @customer.verified_tila == 1 %>&#8730; <% end %>TILA</a></li>
+			<li><a href="#factor_trust"<% if @current_tab == "factor_trust" %> class="default-tab"<% end %> rel="history">Factor Trust</a></li>
+			<li><a href="#comments"<% if @current_tab == "comments" %> class="default-tab"<% end %> rel="history">Comments</a></li>
+			<li><a href="#logs"<% if @current_tab == "logs" %> class="default-tab"<% end %> rel="history">Logs</a></li>
+		</ul>
+		<div class="clear"></div>
+	</div>
+  
+  <div class="content-box-content">
+    
+    <div class="tab-content<% if @current_tab == "summary" %> default-tab<% end %>" id="summary">
+      <%= render :partial => "summary", :locals => { :customer => @customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "personal" %> default-tab<% end %>" id="personal">
+      <%= render :partial => "personal", :locals => { :customer => @customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "financial" %> default-tab<% end %>" id="financial">
+      <%= render :partial => "financial", :locals => { :customer => @customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "employment" %> default-tab<% end %>" id="employment">
+      <%= render :partial => "employment", :locals => { :customer => @customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "tila" %> default-tab<% end %>" id="tila">
+      <%= render :partial => "tila", :locals => { :customer => @customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "comments" %> default-tab<% end %>" id="comments">
+      <%= render :partial => "notes", :locals => { :customer => @customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "logs" %> default-tab<% end %>" id="logs">
+      <%= render :partial => "logs", :locals => { :customer => @customer } %>
+    </div>
+    <div class="tab-content<% if @current_tab == "factor_trust" %> default-tab<% end %>" id="factor_trust">
+      <%= render :partial => "factor_trust", :locals => { :customer => @customer } %>
+    </div>
+  </div>
+</div>

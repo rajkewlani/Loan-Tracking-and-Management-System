@@ -1,0 +1,11 @@
+<div class="comment_container">
+  <div class="comment_header">
+    <!--<div class="gravatar"><%#= gravatar_for(comment.user, :size => 35) %></div>-->
+    <div class="author"><%= comment.user.full_name %></div>
+    <div class="datetime"><%= distance_of_time_in_words_to_now(comment.created_at) %> ago</div>
+    <div class="clear"></div>
+  </div>
+  <div class="comment_body">
+    <%= h comment.comment %>
+  </div>
+</div>

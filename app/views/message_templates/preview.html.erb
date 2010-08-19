@@ -1,0 +1,18 @@
+<% if @sms_message %>
+<h4 style="color:#666666;border-bottom:1px solid #dddddd">SMS</h4>
+<p>
+<%= @sms_message %>
+</p>
+<% end %>
+
+<% if @email_subject || @email_body %>
+<h4 style="color:#666666;border-bottom:1px solid #dddddd">Email</h4>
+<p>
+  <span style="font-weight:bold">Subject:</span><br />
+  <%= @email_subject %>
+</p>
+<p>
+  <span style="font-weight:bold">Message:</span><br />
+  <%= @email_body %>
+</p>
+<% end %>

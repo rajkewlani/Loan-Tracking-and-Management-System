@@ -1,0 +1,87 @@
+<table>
+  <thead>
+    <tr>
+      <th colspan="8" style="font-size: 18px;">Average</th>
+    </tr>
+  </thead>
+</table>
+<table id="daily_avg">
+  <thead>
+    <tr>
+      <th>Portfolio</th>
+      <th>&nbsp;</th>
+      <th>New Loans</th>
+      <th>Reloans</th>
+      <th>RL %</th>
+      <th>Total</th>
+      <th>Total LTD</th>
+      <th>Loans Out</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>All</th>
+      <th>&nbsp;</th>
+      <th><%= @trend_avg[:new_loan_avg] %></th>
+      <th><%= @trend_avg[:reloan_avg] %></th>
+      <% if not @trend_avg[:reloan_perc_avg] == 0 %>
+        <th><%= @trend_avg[:reloan_perc_avg].round(2) %> %</th>
+      <% else %>
+        <th><%= @trend_avg[:reloan_perc_avg] %> %</th>
+      <% end %>
+      <th><%= @trend_avg[:total_loan_avg] %></th>
+      <th>N/A</th>
+      <th><%= @trend_avg[:loans_out_avg] %></th>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr><td colspan="8"></td></tr>
+  </thead>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th colspan="8" style="font-size: 18px;">Trend</th>
+    </tr>
+  </thead>
+</table>
+<table id="daily_trend">
+  <thead>
+    <tr>
+      <th>Day</th>
+      <th>&nbsp;</th>
+      <th>New Loans</th>
+      <th>Reloans</th>
+      <th>RL %</th>
+      <th>Total</th>
+      <th>Total LTD</th>
+      <th>Loans Out</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%  @daily_data.each do |daily_data| %>
+      <tr>
+        <%# if not daily_data.nil? %>
+          <th><%=  daily_data[:snapshot_on].strftime('%A') %></th>
+          <% if daily_data[:total_loans_today] > @trend_avg[:total_loan_avg] %>
+            <th><%= image_tag("/images/icons/up.png", :border => 0, :height => 12, :width => 12) %></th>
+          <% else %>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+          <% end %>
+          <th><%= daily_data[:new_loans_today] %></th>
+          <th><%= daily_data[:reloans_today] %></th>
+          <% if not daily_data[:reloan_percentage] == 0 %>
+          <th><%= daily_data[:reloan_percentage].round(2) %> %</th>
+        <% else %>
+          <th><%= daily_data[:reloan_percentage] %> %</th>
+        <% end %>
+          <th><%= daily_data[:total_loans_today] %></th>
+          <th><%= daily_data[:total_loans_to_date] %></th>
+          <th><%= daily_data[:loans_out_today] %></th>
+        <%# end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

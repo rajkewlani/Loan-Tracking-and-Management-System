@@ -1,0 +1,26 @@
+<%
+page_title = current_user.is_garnishments_agent? ? 'Garnishments' : 'Loans'
+title(page_title)
+%>
+
+<%= display_flash(flash) %>
+<div class="content-box"><!-- Start Content Box -->
+<%if controller.controller_name == "loans" && controller.action_name == "index" %>
+	<%= render :partial => 'aasm_states_filter',:locals=>{:filters=>@filters} %>
+<% end %>
+  <div class="content-box-content">
+
+    <% if !flash[:notice].blank? %>
+  		<div class="notification attention png_bg">
+  			<a href="#" class="close"><img src="/images/icons/cross_grey_small.png" title="Close this notification" alt="close" /></a>
+  			<div>
+  				<%= flash[:notice] %>
+  			</div>
+  		</div>
+  	<% end %>
+
+  	<%= render :partial => "/includes/loans_grid", :locals => { :loans => @loans } %>
+
+  </div>
+
+</div>

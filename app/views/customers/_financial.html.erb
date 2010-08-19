@@ -1,0 +1,95 @@
+<% if current_user.is_underwriter? && customer.pending_approval? %>
+  <div style="float: right; padding-bottom: 10px; margin-top: -10px;">
+    <div id="verify_financial_status"></div>
+  </div>
+  <script type="text/javascript">
+    $('#verify_financial_status').iphoneSwitch('<%= customer.verified_financial == 0 ? "off" : "on" %>',
+      function() { 
+        $.ajax({
+         type: "POST",
+         url: "/customers/<%= customer.id %>/update_validation_status",
+         data: "t=financial&v=1"
+       });
+      },
+      function() { 
+        $.ajax({
+         type: "POST",
+         url: "/customers/<%= customer.id %>/update_validation_status",
+         data: "t=financial&v=0"
+       });
+      },
+      { switch_on_container_path: '/images/iphone_switch/iphone_switch_container_off.png' }
+    );
+  </script>
+  <div class="clear"></div>
+<% end %>
+
+<ul class="show_details">
+  <li class="<%= cycle('odd','even') %>">
+    <label>Monthly Income:</label>
+    <%= in_place_editor_field :customer, :monthly_income, {}, :format => "currency" %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Income Source:</label>
+    <%= in_place_editor_field :customer, :income_source, {}, 
+        { :field_type => 'select', :value_required => true, :select_options => ["Employment:EMPLOYMENT", "Benefits:BENEFITS"]} %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Pay Frequency:</label>
+    <%= in_place_editor_field :customer, :pay_frequency, {}, 
+        { :field_type => 'select', :value_required => true, :select_options => ["Weekly:WEEKLY", "Bi-Weekly:BIWEEKLY", "Twice Monthly:TWICEMONTHLY", "Monthly:MONTHLY"] } %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Direct Deposit?:</label>
+    <%= boolean_to_english(customer.bank_direct_deposit) %>
+    <%= image_tag('icons/tiny_lock.gif', :align => "top", :class => "tooltip locked_field") %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Bank Name:</label>
+    <%= in_place_editor_field :customer, :bank_name %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Bank Account Type:</label>
+    <%= in_place_editor_field :customer, :bank_account_type, {}, 
+        { :field_type => 'select', :value_required => true, :select_options => ["Checking:CHECKING", "Savings:SAVINGS"] } %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Bank ABA #:</label>
+    <% if current_user.role == 'administrator' %>
+    <%= in_place_editor_field :customer, :bank_aba_number, {}, {:value_required => true} %>
+    <% else %>
+    <%= customer.bank_aba_number %>
+    <%= image_tag('icons/tiny_lock.gif', :align => "top", :class => "tooltip locked_field") %>
+    <% end %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Bank Account #:</label>
+    <% if current_user.role == 'administrator' %>
+    <%= in_place_editor_field :customer, :bank_account_number, {}, {:value_required => true} %>
+    <% else %>
+    <%= customer.bank_account_number %>
+    <%= image_tag('icons/tiny_lock.gif', :align => "top", :class => "tooltip locked_field") %>
+    <% end %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label># Months at Bank:</label>
+    <%= in_place_editor_field :customer, :months_at_bank, {}, {:value_required => true} %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Bank Address:</label>
+    <%= in_place_editor_field :customer, :bank_address, {}, {:value_required => true} %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Bank City:</label>
+    <%= in_place_editor_field :customer, :bank_city, {}, {:value_required => true} %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Bank State:</label>
+    <%= in_place_editor_field :customer, :bank_state, { :style => "padding-right: 100px;" }, 
+        { :field_type => 'select', :value_required => true, :select_options => Common::US_STATES.sort.map{|k,v|"#{k} - #{v}:#{k}"} } %>
+  </li>
+  <li class="<%= cycle('odd','even') %>">
+    <label>Bank ZIP:</label>
+    <%= in_place_editor_field :customer, :bank_zip, {}, {:value_required => true} %>
+  </li>
+</ul>

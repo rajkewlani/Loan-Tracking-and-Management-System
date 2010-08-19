@@ -1,0 +1,4 @@
+<% form_tag '/member_area/allocate_hypothetical_loan_payment', :id => 'edit_amount_form' do %>
+  <%= hidden_field_tag :id, params[:id] %>
+  <%= text_field_tag "amount_field", number_with_precision(params[:amount].to_f, :precision => 2), :size => 7, :maxlength => 6 %>
+<% end %>

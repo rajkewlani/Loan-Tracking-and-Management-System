@@ -1,0 +1,29 @@
+<%  title('My Reminders') %>
+
+<%= display_flash(flash) %>
+<div class="content-box"><!-- Start Content Box -->
+<%if controller.controller_name == "reminders" && controller.action_name == "index" %>
+	<%#= render :partial => 'aasm_states_filter',:locals=>{:filters=>@filters} %>
+<% end %>
+  <div class="content-box-content">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Customer</th>
+          <th>Comment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for reminder in @reminders %>
+        <tr>
+          <td><%= reminder.remind_on.to_s(:sm_d_y) -%></td>
+          <td><%= link_to(reminder.loan.customer.full_name, loan_path(reminder.loan.id)) -%></td>
+          <td><%= reminder.comment -%> </td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+</div>

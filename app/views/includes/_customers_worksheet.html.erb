@@ -1,0 +1,53 @@
+<table id="worksheet">
+
+  <thead>
+    <tr>
+      <th class="small"><br/>Last Contacted</th>
+      <th class="small"><br/>Name</th>
+      <th class="small"><br/>Status</th>
+      <th class="very_small center">Verify<br/>Personal</th>
+      <th class="very_small center">Verify<br/>Financial</th>
+      <th class="very_small center">Verify<br/>Employment</th>
+      <th class="very_small center">Truth In<br/>Lending</th>
+      <th class="very_small center">&nbsp;<br/>Status</th>
+    </tr>
+
+  </thead>
+
+  <tbody>
+    <% customers.each do |customer| %>
+      <tr>
+        <td><%= customer.created_at.strftime("%m/%d/%Y %I:%M:%S %p") %></td>
+
+        <td>
+          <%= lastworked(customer)%>
+        </td>
+        <td><%= customer.aasm_state.titleize %></td>
+        <td width="60" class="center">
+          <%= link_to image_tag("icons/icn_#{Customer::VERIFICATION_STATES[customer.verified_personal]}.gif",
+            :border => 0), "/customers/#{customer.id}?tab=personal" %></td>
+        <td width="60" class="center">
+          <%= link_to image_tag("icons/icn_#{Customer::VERIFICATION_STATES[customer.verified_financial]}.gif",
+            :border => 0), "/customers/#{customer.id}?tab=financial" %></td>
+        <td width="60" class="center">
+          <%= link_to image_tag("icons/icn_#{Customer::VERIFICATION_STATES[customer.verified_employment]}.gif",
+            :border => 0), "/customers/#{customer.id}?tab=employment" %></td>
+        <td width="60" class="center">
+          <%= link_to image_tag("icons/icn_#{Customer::VERIFICATION_STATES[customer.verified_tila]}.gif",
+            :border => 0), "/customers/#{customer.id}?tab=tila" %></td>
+        <td width="60" class="center">
+          <% if customer.verification_complete? %>
+            <% if ["approved", "denied"].include? customer.aasm_state %>
+              <%= image_tag("icons/icn_#{customer.aasm_state}.gif", :border => 0) %>
+            <% else %>
+              <%= link_to image_tag("icons/icn_incomplete.gif", :border => 0), "/customers/#{customer.id}?tab=summary" %>
+            <% end %>
+          <% else %>
+            &nbsp;
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+
+</table>

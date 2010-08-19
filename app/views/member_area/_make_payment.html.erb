@@ -1,0 +1,239 @@
+<% content_for :head do %>
+<%= stylesheet_link_tag "south-street/jquery-ui-1.7.2.custom", :media => "screen" %>
+<%= javascript("jquery-ui-1.7.2.custom.min.js") %>
+
+<script type="text/javascript">
+  function setBankAccountFields() {
+    if ($('#sch_bank_account_id').val() == '') {
+      // Add New Account
+      $('#account_info').show();
+    } else {
+      // Existing Account
+      $('#account_info').hide();
+    }
+    method = $("input[name='payment_method']:checked").val();
+    if (method == 'bank_account') {
+      $('#bank_account').show();
+      $('#credit_card').hide();
+    } else {
+      $('#bank_account').hide();
+      $('#credit_card').show();
+    }
+  }
+
+  $(document).ready(function() {
+    $("input[name='payment_method']")[0].checked = true;
+    $("#sch_draft_date").datepicker({
+		    minDate: '+1D',
+		    maxDate: '+3M',
+		    beforeShowDay: noWeekendsOrHolidays });
+    setBankAccountFields();
+    $("input[name='payment_method']").click(function() {
+      setBankAccountFields();
+    });
+  });
+  natDays = [
+    [10, 12, 2009],
+    [11, 11, 2009],
+    [11, 29, 2009],
+    [12, 25, 2009],
+    [1 , 01, 2010],
+    [1 , 18, 2010],
+    [2 , 15, 2010],
+    [5 , 31, 2010],
+    [7 , 04, 2010],
+    [7 , 05, 2010],
+    [9 , 6, 2010],
+    [10, 11, 2010],
+    [11, 11, 2010],
+    [11, 25, 2010],
+    [12, 24, 2010],
+    [12, 25, 2010]
+  ];
+  function nationalDays(date) {
+    for (i = 0; i < natDays.length; i++) {
+      if (date.getMonth() == natDays[i][0] - 1
+        && date.getDate() == natDays[i][1]
+        && date.getFullYear() == natDays[i][2]) {
+          return [false, 'a'];
+      }
+    }
+    return [true, ''];
+  }
+  function noWeekendsOrHolidays(date) {
+    var noWeekend = $.datepicker.noWeekends(date);
+    if (noWeekend[0]) {
+      return nationalDays(date);
+    } else {
+      return noWeekend;
+    }
+  }
+</script>
+<script type="text/javascript">
+  /*
+  $(document).ready(function() {
+    $("input[name='payment_type']").click(function() {
+      method = $("input[name='payment_type']:checked").val();
+	  var temp = new Array()
+	  temp = <%=@payment.to_json%>
+      if (method == 'pay_off_loan') {
+       document.getElementById('sch_principal').value = temp.loan.principal_owed
+	   document.getElementById('sch_interest').value = (temp.loan.interest_owed + temp.loan.fees_owed).toString()
+	   document.getElementById('sch_total').value = (temp.loan.principal_owed + temp.loan.interest_owed + temp.loan.fees_owed).toString()
+	   document.getElementById('sch_total').readOnly = true;
+      } else if(method == 'other')
+	  {
+      	document.getElementById('sch_principal').value = '';
+	   document.getElementById('sch_interest').value = '';
+	   document.getElementById('sch_total').value = '';
+	   document.getElementById('sch_total').readOnly = false;
+      }
+    });
+  });
+  */
+</script>
+<script type="text/javascript">
+
+ $(document).ready(function() {
+    /*
+    $("select[name='sch[bank_account_id]']").change(function() {
+      method = $("select[name='sch[bank_account_id]']").val();
+      if (method != '') {
+	  	var temp= new Array()
+	  	<% @bank_accounts.each do |acc|%>
+			if(<%=acc.id%> == method )
+			{
+				temp = <%= acc.to_json %>
+			}
+		<%end%>	
+		document.getElementById('sch_bank_name').value = temp.bank_account.bank_name;
+		document.getElementById('sch_bank_account_no').value = temp.bank_account.encrypted_bank_account_number;
+		document.getElementById('sch_bank_routing_no').value = temp.bank_account.encrypted_bank_aba_number;
+		var acc_type = document.getElementById('sch_bank_account_type'); 
+		for(var i=0; i < acc_type.length; i++)
+		{
+			if(acc_type[i].value.toUpperCase() == temp.bank_account.bank_account_type)
+			{
+				acc_type.selectedIndex = i;
+			}
+		}
+      }
+	  else
+	  {
+	  	document.getElementById('sch_bank_name').value = '';
+		document.getElementById('sch_bank_account_no').value = '';
+		document.getElementById('sch_bank_routing_no').value = '';
+		document.getElementById('sch_bank_account_type').selectedIndex = -1;
+	  } 
+    });
+    */
+    $("#sch_bank_account_id").change(function() {
+      if ($(this).val() == '') {
+        // Add New Account
+        $('#account_info').show();
+      } else {
+        // Existing Account
+        $('#account_info').hide();
+      }
+    });
+  });
+</script>
+<% end %>
+
+
+<h2>Make A Payment</h2>
+<% form_for :sch do |f| %>
+<fieldset id="payment_method">
+  <legend>Payment Method</legend>
+  <p>
+    <input type="radio" name="payment_method" value="bank_account"/> Bank Account
+  </p>
+  <p>
+    <input type="radio" name="payment_method" value="credit_card"/> Credit Card
+  </p>
+</fieldset>
+<fieldset id="make_payment">
+	<legend>Date &amp; Amount</legend>
+        <table style="padding-left:10px">
+          <tr>
+            <td style="width:140px">Principal</td>
+            <td style="text-align:right;"><%= number_to_currency(@loan.principal_owed) %></td>
+            <td nowrap style="padding-left:30px">Payment Amount</td>
+            <td><%= f.text_field :amount, :value => @loan.total_owed,:class => "text-input medium-input", :size => 6 %></td>
+          </tr>
+          <tr>
+            <td style="width:140px">Interest</td>
+            <td style="text-align:right;"><%= number_to_currency(@loan.interest_owed) %></td>
+            <td nowrap style="padding-left:30px">Payment Date</td>
+            <td><%= f.text_field :draft_date, :size => 12 %></td>
+          </tr>
+          <tr>
+            <td style="width:140px">Fees</td>
+            <td style="text-align:right;border-bottom:5px double #aaa"><%= number_to_currency(@loan.fees_owed) %></td>
+            <td style="padding-left:30px"></td>
+            <td rowspan="2">
+              Payment amount is applied first to fees, interest, and then principal.  If you wish to make
+              a payment towards principal only, please call us at <span style="color:black;font-weight:bold">(866) 569-3321.</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="width:140px;vertical-align:top">Pay Off Total</td>
+            <td style="text-align:right;;vertical-align:top;"><%= number_to_currency(@loan.total_owed) %></td>
+            <td style="padding-left:30px"></td>
+          </tr>
+        </table>
+</fieldset>
+<fieldset id="bank_account">
+  <legend>Bank Account Information</legend>
+  <p>
+     <%= f.label :bank_account_id, 'Bank Account' %>
+     <%= f.select :bank_account_id, current_customer.payment_accounts.map {|pa|[pa.account.description, pa.id]} << ['Add New Account',''] %>
+     <%#= f.select :bank_account_id, @bank_accounts.map{|r|[r.bank_name, r.id]} << ['Add New Account',''] %>
+  </p>
+  <div id="account_info">
+    <p>
+            <%= f.label :bank_name, "Bank Name", :style => 'width:180px' %>
+            <%= f.text_field :bank_name, :class => "text-input medium-input", :maxlength => 30 %>
+    </p>
+    <p>
+            <%= f.label :bank_account_no, "Bank Account Number", :style => 'width:180px' %>
+            <%= f.text_field :bank_account_no, :class => "text-input medium-input", :maxlength => 20 %>
+    </p>
+    <p>
+            <%= f.label :bank_routing_no, "Bank Routing Number", :style => 'width:180px' %>
+            <%= f.text_field :bank_routing_no, :class => "text-input medium-input", :maxlength => 9 %>
+    </p>
+    <p>
+            <%= f.label :bank_account_type, "Bank Account Type", :style => 'width:180px' %>
+            <%= f.select :bank_account_type, ['Checking', 'Savings'], {:include_blank => true} %>
+    </p>
+  </div>
+</fieldset>
+<fieldset id="credit_card" style="display:none">
+  <legend>Credit Card Information</legend>
+  <p>
+    <%= f.label :name_on_card %>
+    <%= f.text_field :card_number, :size => 16, :maxlength => 16 %>
+  </p>
+  <p>
+    <%= f.label :expires %>
+    <%= f.text_field :expires %>
+  </p>
+  <p>
+    <%= f.label :cvv, '3 Digit Security Code' %>
+    <%= f.text_field :cvv, :maxlength => 3 %>
+  </p>
+  <p>
+    <%= f.label :name_on_card %>
+    <%= f.text_field :name_on_card %>
+  </p>
+  <p>
+    <%= f.label :card_billing_address %>
+    <%= f.text_field :card_billing_address %>
+  </p>
+  <p>
+    <%= f.label :card_billing_zip %>
+    <%= f.text_field :card_billing_zip %>
+  </p>
+</fieldset>
+<%end%>

@@ -1,0 +1,38 @@
+<ul class="sub-tab-content">
+  <li class="sub-tab first current-tab" rel="verify_411">Phones &amp; Addresses</li>
+  <li class="sub-tab" rel="verify_application">Application</li>
+  <li class="sub-tab" rel="verify_employment">Employment</li>
+  <li class="sub-tab" rel="verify_references">References</li>
+  <li class="sub-tab" rel="verify_truth_in_lending">Truth In Lending</li>
+  <div class="clear"></div>
+</ul>
+<div class="clear"></div>
+  
+<div class="sub-content-box-content">
+  <div class="sub-tab-content" id="verify_411">
+    <%= render :partial => "/customers/verifications/verify_411", :locals => { :customer => customer } %>
+  </div>
+  <div class="sub-tab-content" id="verify_application" style="display: none;">
+    <%= render :partial => "/customers/verifications/verify_application", :locals => { :customer => customer } %>
+  </div>
+  <div class="sub-tab-content" id="verify_employment" style="display: none;">
+    <%= render :partial => "/customers/verifications/verify_employment", :locals => { :customer => customer } %>
+  </div>
+  <div class="sub-tab-content" id="verify_references" style="display: none;">
+    <%= render :partial => "/customers/verifications/verify_references", :locals => { :customer => customer } %>
+  </div>
+  <div class="sub-tab-content" id="verify_truth_in_lending" style="display: none;">
+    <%= render :partial => "/customers/verifications/verify_truth_in_lending", :locals => { :customer => customer } %>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    $("li.sub-tab").click(function() { 
+      $('li.sub-tab').removeClass('current-tab');
+      $(this).addClass('current-tab');
+      $('div.sub-tab-content').hide();
+      $('#' + $(this).attr("rel")).show();
+    })
+  })
+</script>

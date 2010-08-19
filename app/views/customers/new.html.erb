@@ -1,0 +1,470 @@
+<% content_for :head do %>
+<%#= stylesheet("/south-street/jquery-ui-1.7.2.custom.css") %>
+<%= javascript("jquery-ui-1.7.2.custom.min.js") %>
+<script type="text/javascript">
+	$(function() {
+		$("#customer_next_pay_date_1").datepicker({
+		    minDate: '+1D',
+		    maxDate: '+1M',
+		    beforeShowDay: noWeekendsOrHolidays });
+		$("#customer_next_pay_date_2").datepicker({
+    		minDate: '+8D',
+    		maxDate: '+1M +25D',
+    		beforeShowDay: noWeekendsOrHolidays });
+	});
+  natDays = [
+    [10, 12, 2009],
+    [11, 11, 2009],
+    [11, 29, 2009],
+    [12, 25, 2009],
+    [01, 01, 2010],
+    [01, 18, 2010],
+    [02, 15, 2010],
+    [05, 31, 2010],
+    [07, 04, 2010],
+    [07, 05, 2010],
+    [09, 06, 2010],
+    [10, 11, 2010],
+    [11, 11, 2010],
+    [11, 25, 2010],
+    [12, 24, 2010],
+    [12, 25, 2010]
+  ];
+  function nationalDays(date) {
+    for (i = 0; i < natDays.length; i++) {
+      if (date.getMonth() == natDays[i][0] - 1
+        && date.getDate() == natDays[i][1]
+        && date.getFullYear() == natDays[i][2]) {
+          return [false, 'a'];
+      }
+    }
+    return [true, ''];
+  }
+  function noWeekendsOrHolidays(date) {
+    var noWeekend = $.datepicker.noWeekends(date);
+    if (noWeekend[0]) {
+      return nationalDays(date);
+    } else {
+      return noWeekend;
+    }
+  }
+</script>
+<% end %>
+
+<% title("Add New Customer") %>
+
+<div class="content-box"><!-- Start Content Box -->
+  <div class="content-box-content">
+    <% form_for @customer do |f| %>
+    <fieldset class="gray-border">
+      <legend>FloBridge Info</legend>
+        <div class="form_field <%= @customer.errors.invalid?(:portfolio_id) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :portfolio_id, "Portfolio<span class=\"required\">*</span>" %>
+          <%= f.select :portfolio_id, Portfolio.find(:all).collect { |p| [p.name, p.id]}, :include_blank => true %>
+        </div>
+    </fieldset>
+    <fieldset class="gray-border">
+      <legend>Customer Information</legend>
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:loan_amount) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :requested_loan_amount, "Loan Amount<span class=\"required\">*</span>" %>
+          <%= f.select :requested_loan_amount, [100,150,200,250,300,350,400,450,500].map{|n|[number_to_currency(n), n]}, :include_blank => true %>
+          <span style="font-size: 11px; color: #666;">$300 max for first-time borrowers</span>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:mothers_maiden_name) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :mothers_maiden_name, "Mother's&nbsp;Maiden&nbsp;Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :mothers_maiden_name, :class => "text-input plus-input", :size => 12 %>
+        </div>
+        <div class="form_field">
+          <%= f.label :gender, "Gender (optional)" %>
+          <%= f.select :gender, [["Female", "f"], ["Male", "m"]], :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:first_name) ? 'fieldWithErrors' : '' %>" >
+          <%= f.label :first_name, "First Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :first_name, :class => "text-input plus-input", :size => 8 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:middle_name) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :middle_name, "Middle Name" %>
+          <%= f.text_field :middle_name, :class => "text-input plus-input", :size => 8 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:last_name) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :last_name, "Last Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :last_name, :class => "text-input plus-input", :size => 8 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= (@customer.errors.invalid?(:ssn_1) || @customer.errors.invalid?(:ssn_2) || @customer.errors.invalid?(:ssn_3)) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :ssn, "Social Security Number<span class=\"required\">*</span>" %>
+          <%= f.text_field :ssn_1, :class => "text-input plus-input", :size => 3 %> -
+          <%= f.text_field :ssn_2, :class => "text-input plus-input", :size => 2 %> -
+          <%= f.text_field :ssn_3, :class => "text-input plus-input", :size => 4 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:email) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :email, "Email<span class=\"required\">*</span>" %>
+          <%= f.text_field :email, :class => "text-input plus-input", :size => 33 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:dl_number) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :dl_number, "Drivers License Number<span class=\"required\">*</span>" %>
+          <%= f.text_field :dl_number, :class => "text-input plus-input", :size => 18 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:dl_state) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :dl_state, "State<span class=\"required\">*</span>" %>
+          <%= f.select :dl_state, Customer::US_STATES.map{|u|[u[1],u[1]]}, :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:address) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :address, "Address<span class=\"required\">*</span>" %>
+          <%= f.text_field :address, :class => "text-input plus-input", :size => 33 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:birth_date) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :birth_date, "Date of Birth<span class=\"required\">*</span>" %>
+          <%= f.date_select :birth_date, :order => [:month, :day, :year], :start_year => (Time.now.year - 80), :end_year => (Time.now - 18.years).year, :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:city) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :city, "City<span class=\"required\">*</span>" %>
+          <%= f.text_field :city, :class => "text-input plus-input", :size => 14 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:state) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :state, "State<span class=\"required\">*</span>" %>
+          <%= f.select :state, Customer::US_STATES.map{|s| s[1]}, :include_blank => true %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:zip) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :zip, "ZIP<span class=\"required\">*</span>" %>
+          <%= f.text_field :zip, :class => "text-input plus-input", :size => 5, :maxlength => 5 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= (@customer.errors.invalid?(:home_phone)) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :home_phone, "Home Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :home_phone_area_code, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :home_phone_prefix, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :home_phone_suffix, :class => "text-input plus-input", :size => 4, :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:residence_type) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :residence_type, "Own or Rent?<span class=\"required\">*</span>" %>
+          <%= f.select :residence_type, [["Own","OWN"], ["Rent","RENT"]], :include_blank => true %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:months_at_address) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :months_at_address, "Time at Address<span class=\"required\">*</span>" %>
+          <%= f.select :months_at_address, Customer::MONTHS_AT, :include_blank => true %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= (@customer.errors.invalid?(:work_phone)) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :work_phone, "Work Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :work_phone_area_code, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :work_phone_prefix, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :work_phone_suffix, :class => "text-input plus-input", :size => 4, :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:monthly_residence_cost) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :monthly_residence_cost, "Monthly Mortgage or Rent Payment<span class=\"required\">*</span>" %>
+          <%= f.text_field :monthly_residence_cost, :class => "text-input plus-input", :size => 5 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:best_time_to_call) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :best_time_to_call, "Best Time To Call" %>
+          <%= f.select :best_time_to_call, [["Anytime", "anytime"], ["Morning", "morning"],["Afternoon","afternoon"],["Evening","evening"]], :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="employer_name <%= @customer.errors.invalid?(:landlord_name) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :landlord_name, "Landlord Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :landlord_name, :class => "text-input plus-input", :size => 33 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:landlord_phone) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :landlord_phone, "Landlord Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :landlord_phone_area_code, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :landlord_phone_prefix, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :landlord_phone_suffix, :class => "text-input plus-input", :size => 4, :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form-field">
+          <%= f.check_box :military %> Member of U.S. Military
+        </div>
+      </div>
+      <div class="column-right">
+      </div>
+      <div class="clear"></div>
+
+    </fieldset>
+
+    <fieldset class="gray-border">
+      <legend>Banking Information</legend>
+      <div class="column-left" style="width: 260px;">
+        <div class="form_field <%= @customer.errors.invalid?(:bank_name) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :bank_name, "Bank Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :bank_name, :class => "text-input plus-input", :class => "text-input plus-input", :size => 24 %>
+        </div>
+        <div class="clear" style="padding-top: 2px;"></div>
+
+        <div class="form_field <%= @customer.errors.invalid?(:bank_aba_number) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :bank_aba_number, "Bank Routing Number<span class=\"required\">*</span>" %>
+          <%= f.text_field :bank_aba_number, :class => "text-input plus-input", :size => 24 %>
+        </div>
+        <div class="clear" style="padding-top: 2px;"></div>
+
+        <div class="form_field <%= @customer.errors.invalid?(:bank_account_number) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :bank_account_number, "Bank Account Number<span class=\"required\">*</span>" %>
+          <%= f.text_field :bank_account_number, :class => "text-input plus-input", :size => 24 %>
+        </div>
+        <div class="clear" style="padding-top: 2px;"></div>
+
+        <div class="form_field <%= @customer.errors.invalid?(:bank_account_type) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :bank_account_type, "Bank Account Type<span class=\"required\">*</span>" %>
+          <%= f.select :bank_account_type, [["Checking", "CHECKING"], ["Savings", "SAVINGS"]], :include_blank => true %>
+        </div>
+        <div class="clear" style="padding-top: 2px;"></div>
+
+        <div class="form_field <%= @customer.errors.invalid?(:months_at_bank) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :months_at_bank, "Bank Account Length<span class=\"required\">*</span>" %>
+          <%= f.select :months_at_bank, Customer::MONTHS_AT, :include_blank => true %>
+        </div>
+      </div>
+      <!--
+      <div class="column-right" style="width: 410px;">
+        <div class="form_field">
+          <%#= image_tag("check_sample.png", :border => 0, :width => 400) %>
+        </div>
+      </div>
+      -->
+      <div class="clear"></div>
+    </fieldset>
+
+    <fieldset class="gray-border">
+      <legend>Employment Information</legend>
+      <div class="column-left">
+        <div class="employer_name <%= @customer.errors.invalid?(:employer_name) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :employer_name, "Employer Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_name, :class => "text-input plus-input", :size => 33 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:monthly_income) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :monthly_income, "Monthly Net Income<span class=\"required\">*</span>" %>
+          <%= f.select :monthly_income, Customer::MONTHLY_INCOMES, :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:employer_address) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :employer_address, "Address<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_address, :class => "text-input plus-input", :size => 33 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:pay_frequency) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :pay_frequency, "Income Frequency<span class=\"required\">*</span>" %>
+          <%= f.select :pay_frequency, Customer::PAY_FREQUENCY, :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:employer_city) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :employer_city, "City<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_city, :class => "text-input plus-input", :size => 14 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:employer_state) ? 'fieldWithErrors' : '' %>" style="width:15% !important">
+          <%= f.label :employer_state, "State<span class=\"required\">*</span>" %>
+          <%= f.select :employer_state, Customer::US_STATES.map{|s| s[1]}, :include_blank => true %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:employer_zip) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :employer_zip, "ZIP<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_zip, :class => "text-input plus-input", :size => 5, :maxlength => 5 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:next_pay_date_1) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :next_pay_date_1, "Next Pay Date<span class=\"required\">*</span>" %>
+          <%= f.text_field :next_pay_date_1, :class => "text-input plus-input", :size => 14 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= (@customer.errors.invalid?(:employer_phone)) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :employer_phone, "Employer Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_phone_area_code, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :employer_phone_prefix, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :employer_phone_suffix, :class => "text-input plus-input", :size => 4, :maxlength => 4 %> ext
+          <%= f.text_field :employer_phone_ext, :class => "text-input plus-input", :size => 4, :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:next_pay_date_2) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :next_pay_date_2, "Second Pay Date<span class=\"required\">*</span>" %>
+          <%= f.text_field :next_pay_date_2, :class => "text-input plus-input", :size => 14 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= (@customer.errors.invalid?(:employer_fax)) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :employer_fax, "Employer Fax" %>
+          <%= f.text_field :employer_fax_area_code, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :employer_fax_prefix, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :employer_fax_suffix, :class => "text-input plus-input", :size => 4, :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="column-right">
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="employer_name <%= @customer.errors.invalid?(:supervisor_name) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :supervisor_name, "Supervisor Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :supervisor_name, :class => "text-input plus-input", :size => 33 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:supervisor_phone) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :supervisor_phone, "Supervisor Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :supervisor_phone_area_code, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :supervisor_phone_prefix, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :supervisor_phone_suffix, :class => "text-input plus-input", :size => 4, :maxlength => 4 %> ext
+          <%= f.text_field :supervisor_phone_ext, :class => "text-input plus-input", :size => 4, :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field">
+          <div class="form_field <%= @customer.errors.invalid?(:months_employed) ? 'fieldWithErrors' : '' %>">
+            <%= f.label :months_employed, "Duration of Employment<span class=\"required\">*</span>" %>
+            <%= f.select :months_employed, Customer::MONTHS_AT, :include_blank => true %>
+          </div>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:bank_direct_deposit) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :bank_direct_deposit, "Direct Deposit?<span class=\"required\">*</span>" %>
+          <%= f.select :bank_direct_deposit,
+                            [["Yes", 1], ["No", 0]],
+                            :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+    </fieldset>
+
+    <fieldset class="gray-border">
+      <legend>References</legend>
+
+      <p class="instructions">Please provide 2 references. References must be friends or relatives that are not living with you. We will not contact your references to qualify you for your loan.</p>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:reference_1_name) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :reference_1_name, "Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :reference_1_name, :class => "text-input plus-input" %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:reference_2_name) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :reference_2_name, "Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :reference_2_name, :class => "text-input plus-input" %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= (@customer.errors.invalid?(:reference_1_phone)) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :reference_1_phone, "Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :ref1_phone_area_code, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :ref1_phone_prefix, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :ref1_phone_suffix, :class => "text-input plus-input", :size => 4, :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= (@customer.errors.invalid?(:reference_2_phone)) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :reference_2_phone, "Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :ref2_phone_area_code, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :ref2_phone_prefix, :class => "text-input plus-input", :size => 3, :maxlength => 3 %> -
+          <%= f.text_field :ref2_phone_suffix, :class => "text-input plus-input", :size => 4, :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="column-left">
+        <div class="form_field <%= @customer.errors.invalid?(:reference_1_relationship) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :reference_1_relationship, "Relationship<span class=\"required\">*</span>" %>
+          <%= f.select :reference_1_relationship,
+                            Customer::RELATIONSHIPS,
+                            :include_blank => true %>
+        </div>
+      </div>
+      <div class="column-right">
+        <div class="form_field <%= @customer.errors.invalid?(:reference_2_relationship) ? 'fieldWithErrors' : '' %>">
+          <%= f.label :reference_2_relationship, "Relationship<span class=\"required\">*</span>" %>
+          <%= f.select :reference_2_relationship,
+                            Customer::RELATIONSHIPS,
+                            :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </fieldset>
+    <p>
+      <input class="button" type="submit" value="Save Changes" />
+      or <%= link_to "Cancel", users_path %>
+    </p>
+
+    <!--
+    <div>
+    <fieldset class="column-left">
+      <p>
+      <div class="error">
+        <%#= f.label :reference_2_phone, "Phone<span class=\"required\">*</span>" %>
+        <%#= f.text_field :reference_2_phone, :class => "text-input plus-input", :maxlength => 12 %>
+      </div>
+      </p>
+    </fieldset>
+    <fieldset class="column-left">
+      <p>
+        <%#= f.label :reference_2_phone, "Phone<span class=\"required\">*</span>" %>
+        <%#= f.text_field :reference_2_phone, :class => "text-input plus-input", :maxlength => 12 %>
+      </p>
+    </fieldset>
+    </div>
+    <div class="clear"></div>
+    -->
+
+    <% end %>
+  </div>
+</div>

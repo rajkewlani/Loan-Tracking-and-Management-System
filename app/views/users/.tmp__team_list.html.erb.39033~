@@ -1,0 +1,2 @@
+ <%= f.label :team_id, "Team" %>
+ <%= f.select :team_id, @teams.collect { |team| [team.name,team.id]}, {:include_blank => true}, { :class => "text-input medium-input" } %>

@@ -1,0 +1,17 @@
+Use this README file to introduce your application and point to useful places in the API for learning more.
+Run "rake doc:app" to generate API documentation for your models, controllers, helpers, and libraries.
+
+Advantage ACH
+    Mark (Support): (602) 626-5040
+
+TxtWire
+    Support:
+    Creg Fielding
+    (208) 680-9056
+    (877) 652-0030 x703
+
+PdfKit
+
+    On the production server it was necessary to install the 64-bit executable.  It was also necessary to install
+    the X Windows fonts shared libraries with "sudo apt-get install xorg".
+

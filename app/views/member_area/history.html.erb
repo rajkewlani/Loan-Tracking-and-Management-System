@@ -1,0 +1,41 @@
+<% content_for :head do %>
+  <%= stylesheet_link_tag 'facebox', 'custom' %>
+  <%#= javascript_include_tag 'facebox' %>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $.facebox.settings.opacity = 0.5;
+      $.facebox.settings.width = 500;
+      $('a[rel*=facebox]').facebox() ;
+    });
+  </script>
+<% end %>
+
+<fieldset>
+  <legend>Account History</legend>
+  <table>
+    <thead>
+      <tr>
+        <th class="first">Date</th>
+        <th>Loan</th>
+        <th>Amount</th>
+        <th>Due Date</th>
+        <th>Agreement</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for loan in current_customer.loans %>
+      <tr>
+        <td class="first"><%= loan.created_at.to_s(:sm_d_y) -%></td>
+        <td style="text-align:right"><%= loan.id -%></td>
+        <td style="text-align:right"><%= number_to_currency(loan.approved_loan_amount, :precision => 0) -%></td>
+        <td><%= loan.due_date.to_s(:sm_d_y) -%></td>
+        <td style="text-align:center"><a href="/member_area/tila_for_loan/<%= loan.id -%>"><%= image_tag 'icons/page.gif' -%></a></td>
+        <td><%= loan.aasm_state.capitalize -%></td>
+        <td><%= link_to('Loan Activity', {:controller => :member_area, :action => :loan_activity, :id => loan.id}, :rel => 'facebox') -%> </td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</fieldset>

@@ -1,0 +1,458 @@
+<script type="text/javascript">
+  function blockEnter(evt)
+  {
+    evt = (evt) ? evt : event;
+    var charCode = (evt.charCode) ? evt.charCode :
+      ((evt.which) ? evt.which : evt.keyCode);
+    if (charCode == 13)
+    {
+      return false;
+    }
+    else
+    {
+      return true;
+    }
+  }
+
+  function ShowMenu(){
+    $('#report_menu').slideToggle();
+  }
+
+  $(document).ready(function()
+  {
+    $('#go').click(function() {
+      daterange = $('#daterange').val();
+      if (daterange == "")
+      {
+        alert('please select Date');
+        return false;
+      }
+      else
+      {
+        $.post("/performance_asper_selectdate/","selectdate="+$('#daterange').val(),null,"script");
+      }
+    });
+  });
+		  
+ 
+</script>
+<%= stylesheet("ui.daterangepicker.css") %>
+<%= javascript("jquery-ui-1.7.1.custom.min.js") %>
+<%= javascript("daterangepicker.jQuery.js") %>
+
+<script type="text/javascript">	
+  $(function(){
+    $('#daterange').daterangepicker({arrows:true});
+  });
+		 
+		
+</script>
+
+<!-- from here down, demo-related styles and scripts -->
+<style type="text/css">
+  body { font-size: 62.5%; }
+  input {width: 196px; height: 1.1em; display:block;}
+</style>
+
+<% title(current_user.full_name) %>
+
+<div id="report_duration" style="height: 50px;">
+  <div style="color:green;font-size:18px;font-weight:bold;">
+    <%= current_user.role.upcase -%>
+  </div>
+  <div style="float:left;">
+    <div style="float:inherit;padding-left:435px;">
+      <input type="text" name="daterange" id="daterange" readonly="true" onkeydown="return blockEnter(event);"  />
+    </div>
+    <%# form_remote_tag(:update =>"",:url => {}) %>
+
+    &nbsp;&nbsp;<%= link_to_function(image_tag("/images/gobutton.gif", :size => "19x19", :border => 0,:id=>"go")) %>
+    <%# end_form %>
+
+  </div>
+  <div style="float:right;">
+     <%= link_to image_tag("/images/export_to_csv.png", :size => "16x16", :border => 0), export_performance_csv_path,:title=>'export to csv' %>
+     <%= link_to image_tag("/images/export_to_excel.png", :size => "16x16", :border => 0), export_performance_data_to_excel_path,:title=>"export to excel" %>
+     <%= link_to image_tag("/images/export_to_pdf.png", :size => "16x16", :border => 0), export_performance_data_to_pdf_path,:title=>"export to pdf" %>
+  </div>
+</div>
+
+
+<div class="content-box" style="min-width: 650px;">
+  <div class="content-box-header" style="text-align:center;">
+    <ul class="content-box-tabs" style="float:none;">
+      <li style="width:300px;">&nbsp;</li>
+      <li ><a  href="#tab1" class="<%= default_tab_class('tab1')%> default-tab">Performance</a></li>
+      <% if current_user.role == 'administrator'%>
+        <li ><a  href="#tab2" class="<%= default_tab_class('tab2')%>" rel="history">Underwriting</a></li>
+        <li ><a  href="#tab3" class="<%= default_tab_class('tab3')%>" rel="history">Collections</a></li>
+        <li ><a  href="#tab4" class="<%= default_tab_class('tab4')%>" rel="history">Garnishments</a></li>
+      <%end%>
+      <li ><a  href="#tan5" rel="history">Incentives</a></li>
+    </ul>
+    <div class="clear"></div>
+  </div>
+
+  <div class="content-box-content">
+    <%= display_flash(flash) %>
+
+    <div style="min-width: 650px;" class="default-tab" id="tab1">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">
+	            Department
+            </th>
+          </tr>
+        </thead>
+      </table>
+      <div id="performance_report_data" >
+        <%= render :partial => 'performance_data',:locals=>{:team_performance_data=>@get_team_performance_data,:get_all_deparment_performance_data=>@get_all_deparment_performance_data} %>
+      </div>
+    </div>
+    <div class="tab-content <%= default_tab_class('tab2') -%>" id="tab2">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">
+              Department
+            </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>&nbsp;</th>
+            <th>Apps.</th>
+            <th>Yes</th>
+            <th>Hour</th>
+            <th>Day</th>
+            <th>Conv.</th>
+            <th>No</th>
+            <th>1st D</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>All</th>
+            <th>&nbsp;</th>
+            <th>30</th>
+            <th>10</th>
+            <th>1.5</th>
+            <th>12</th>
+            <th>33 %</th>
+            <th>20</th>
+            <th>2</th>
+            <th>30</th>
+          </tr>
+        </tbody>
+
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">
+              My Team
+            </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>&nbsp;</th>
+            <th>Apps.</th>
+            <th>Yes</th>
+            <th>Hour</th>
+            <th>Day</th>
+            <th>Conv.</th>
+            <th>No</th>
+            <th>1st D</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>John Stockton</th>
+            <th><%= image_tag("/images/icons/bullet_black.png", :border => 0) %></th>
+            <th>30</th>
+            <th>12</th>
+            <th>1.7</th>
+            <th>14</th>
+            <th>35 %</th>
+            <th>18</th>
+            <th>2</th>
+            <th>20 %</th>
+          </tr>
+          <tr>
+            <th>Karl Malone</th>
+            <th><%= image_tag("/images/icons/bullet_black.png", :border => 0) %></th>
+            <th>35</th>
+            <th>8</th>
+            <th>1.0</th>
+            <th>10</th>
+            <th>25 %</th>
+            <th>27</th>
+            <th>5</th>
+            <th>30 %</th>
+          </tr>
+          <tr>
+            <th>Carlos Boozer </th>
+            <th><%= image_tag("/images/icons/bullet_black.png", :border => 0) %></th>
+            <th>30</th>
+            <th>12</th>
+            <th>1.7</th>
+            <th>14</th>
+            <th>35 %</th>
+            <th>18</th>
+            <th>2</th>
+            <th>20 %</th>
+          </tr>
+          <tr>
+            <th>Frank Layton</th>
+            <th><%= image_tag("/images/icons/bullet_black.png", :border => 0) %></th>
+            <th>30</th>
+            <th>12</th>
+            <th>1.7</th>
+            <th>14</th>
+            <th>35 %</th>
+            <th>18</th>
+            <th>2</th>
+            <th>20 %</th>
+          </tr>
+          <tr>
+            <th>Rod Hundley</th>
+            <th><%= image_tag("/images/icons/bullet_black.png", :border => 0) %></th>
+            <th>30</th>
+            <th>12</th>
+            <th>1.7</th>
+            <th>14</th>
+            <th>35 %</th>
+            <th>18</th>
+            <th>2</th>
+            <th>20 %</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tab-content <%= default_tab_class('tab3') -%>" id="tab3">
+      <table border="0" >
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">
+              Department
+            </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>&nbsp;</th>
+            <th >Cash</th>
+            <th >Tot.</th>
+            <th >Paid</th>
+            <th >Sched</th>
+            <th >P. Plan</th>
+            <th >Adj.</th>
+            <th >Garn.</th>
+            <th >W.O.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>All</th>
+            <th>&nbsp;</th>
+            <th >$1,500</th>
+            <th >100</th>
+            <th >35</th>
+            <th >24</th>
+            <th >12</th>
+            <th >8</th>
+            <th >65</th>
+            <th >15</th>
+          </tr>
+        </tbody>
+
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">
+              My Team
+            </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th >Name</th>
+            <th >&nbsp;</th>
+            <th >Cash</th>
+            <th >Tot.</th>
+            <th ">Paid</th>
+            <th>Sched</th>
+            <th>P. Plan</th>
+            <th>Adj.</th>
+            <th >Garn.</th>
+            <th >W.O.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>John Stockton</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th >$1,800</th>
+            <th >120</th>
+            <th >50</th>
+            <th >35</th>
+            <th >20</th>
+            <th >4</th>
+            <th >70</th>
+            <th >15</th>
+          </tr>
+          <tr>
+            <th>Karl Malone</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th >$1,250</th>
+            <th >120</th>
+            <th >50</th>
+            <th >35</th>
+            <th >20</th>
+            <th >4</th>
+            <th >70</th>
+            <th >15</th>
+          </tr>
+          <tr>
+            <th>Carlos Boozer </th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th >$1,250</th>
+            <th >120</th>
+            <th >50</th>
+            <th >35</th>
+            <th >20</th>
+            <th >4</th>
+            <th >70</th>
+            <th >15</th>
+          </tr>
+          <tr>
+            <th>Frank Layton</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th >$1,250</th>
+            <th >120</th>
+            <th >50</th>
+            <th >35</th>
+            <th >20</th>
+            <th >4</th>
+            <th >70</th>
+            <th >15</th>
+          </tr>
+          <tr>
+            <th>Rod Hundley</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th >$1,250</th>
+            <th >120</th>
+            <th >50</th>
+            <th >35</th>
+            <th >20</th>
+            <th >4</th>
+            <th >70</th>
+            <th >15</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-content <%= default_tab_class('tab4') -%>" id="tab4">
+      <table border="0" >
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">
+              Department
+            </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>&nbsp;</th>
+            <th >Tot.</th>
+            <th >Sent</th>
+            <th >Approved</th>
+            <th >Court Order</th>
+            <th >Rejected</th>
+            <th >Cash</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>All</th>
+            <th>&nbsp;</th>
+            <th >425</th>
+            <th >375</th>
+            <th >137</th>
+            <th >154</th>
+            <th >98</th>
+            <th >$7,430</th>
+          </tr>
+        </tbody>
+
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">
+              My Team
+            </th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>&nbsp;</th>
+            <th >Tot.</th>
+            <th >Sent</th>
+            <th >Approved</th>
+            <th >Court Order</th>
+            <th >Rejected</th>
+            <th >Cash</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Tupac Shakur</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th >534</th>
+            <th >400</th>
+            <th >315</th>
+            <th >75</th>
+            <th >98</th>
+            <th >$12,456</th>
+          </tr>
+          <tr>
+            <th>Markie Mark</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th >397</th>
+            <th >230</th>
+            <th >146</th>
+            <th >100</th>
+            <th >128</th>
+            <th >$5,456</th>
+          </tr>
+          <tr>
+            <th>Flavor Flav</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th >452</th>
+            <th >100</th>
+            <th >99</th>
+            <th >1</th>
+            <th >0</th>
+            <th >$10,345</th>
+          </tr>
+          <tr>
+            <th>Oscar Grouch</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th >452</th>
+            <th >100</th>
+            <th >99</th>
+            <th >109</th>
+            <th >80</th>
+            <th >$9,345</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

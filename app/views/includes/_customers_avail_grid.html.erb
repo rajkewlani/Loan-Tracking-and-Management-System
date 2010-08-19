@@ -1,0 +1,31 @@
+<table>
+	<thead>
+		<tr>
+		   <th><input class="check-all" type="checkbox" /></th>
+		   <th>Name</th>
+		   <th>Link</th>
+		</tr>
+
+	</thead>
+
+	<tfoot>
+		<tr>
+			<td colspan="7" style="text-align: center;">
+				<%= will_paginate customers, :inner_window => 1, :style => "text-align: center;" %><br/>
+        <%= page_entries_info @customers %>
+				<div class="clear"></div>
+			</td>
+		</tr>
+	</tfoot>
+
+	<tbody>
+	  <% customers.each do |customer| %>
+			<tr>
+				<td><%=check_box :check ,:value	%></td>
+				<td><%= link_to customer.full_name, customer_path(customer) %></td>
+				<td></td>
+			</tr>
+		<% end %>
+	</tbody>
+
+</table>

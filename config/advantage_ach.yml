@@ -1,0 +1,16 @@
+development:
+  host:       ftp.achfederal.com
+  login_id:   Advantageftp3
+  password:   Tr@1n!63
+  origin_id:  1004290003
+
+test:
+  login_id:   ACHCOMME
+  password:   8920BACH
+  origin_id:  1004290003
+
+production:
+  host:       ftp.achfederal.com
+  login_id:   Advantageftp3
+  password:   Tr@1n!63
+  origin_id:  1004290003

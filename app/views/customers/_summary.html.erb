@@ -1,0 +1,94 @@
+<% if current_user.is_underwriter? && @customer.ready_for_approval_or_rejection? %>
+  <script type="text/javascript">
+  $(function() {
+    $('#accept_or_reject_accept').click(function() {
+      $('#accept_reject_container').removeClass('attention').removeClass('error').addClass('success');
+      $('#accept_reject_button').val('ACCEPT LOAN').show();
+    })
+    $('#accept_or_reject_reject').click(function() {
+      $('#accept_reject_container').removeClass('attention').removeClass('success').addClass('error');
+      $('#accept_reject_button').val('REJECT LOAN').show();
+    })
+  })
+  </script>
+
+  <%= display_flash(flash) %>
+<% end %>
+
+<div style="width: 35%; float: left; text-align: left;">
+  <img src="http://chart.apis.google.com/chart?chs=225x95&cht=gom&chd=t:<%= ((@customer.factor_trust.score.to_f / 850.0) * 100).to_i %>&chl=<%= @customer.factor_trust.score %>" border="1" /><h4 style="margin-top: 10px; margin-left: 35px;">Factor Trust Score</h4>
+</div>
+<div style="float: right; width: 65%">
+  <ul class="show_details">
+    <li class="<%= cycle('odd','even') %>">
+      <label style="width: 165px;">Status:</label>
+      <%= customer.aasm_state.titleize %>
+    </li>
+    <% if customer.aasm_state == "denied" %>
+      <li class="<%= cycle('odd','even') %>">
+        <label style="width: 165px;">Reject Reason:</label>
+        <%= h customer.reject_reason %>&nbsp;
+      </li>
+    <% end %>
+    <li class="<%= cycle('odd','even') %>">
+      <label style="width: 165px;">Application Date:</label>
+      <%= customer.created_at.strftime("%b %d, %Y %I:%M %p") %>
+    </li>
+    <li class="<%= cycle('odd','even') %>">
+      <label style="width: 165px;">Lead Source:</label>
+      <%= h customer.lead_source %>
+    </li>
+    <li class="<%= cycle('odd','even') %>">
+      <label style="width: 165px;">Lead Provider:</label>
+      <%= h customer.lead_provider.name %>
+    </li>
+    <li class="<%= cycle('odd','even') %>">
+      <label style="width: 165px;">Desired Loan Amount:</label>
+      <%= number_to_currency(customer.loan_amount) %>
+    </li>
+    <li class="<%= cycle('odd','even') %>">
+      <label style="width: 165px;">Underwriter:</label>
+      <% if customer.underwriter %>
+        <%= customer.underwriter.full_name %>
+      <% else %>
+        Not assigned.
+      <% end %>
+    </li>
+    <li class="<%= cycle('odd','even') %>">
+      <label style="width: 165px;">Collection Agent:</label>
+      <% if customer.collections_agent %>
+        <%= customer.collections_agent.full_name %>
+      <% else %>
+        Not assigned.
+      <% end %>
+    </li>
+  </ul>
+</div>
+<div class="clear"></div>
+
+<% if current_user.is_underwriter? && @customer.ready_for_approval_or_rejection? %>
+  <div class="notification attention" id="accept_reject_container" style="background-image: none !important;">
+    <div style="padding: 5px 20px 0px 20px;">
+    	<% form_for @customer, :url => complete_approval_process_customer_path(@customer) do |f| %>
+      	<p>
+      	  <input type="radio" name="accept_or_reject" id="accept_or_reject_accept" value="accept" /> <strong>I approve this customer for a payday loan of&nbsp;&nbsp;</strong>
+      		<%= f.select :approved_loan_amount, [["$100.00","100"],["$200.00","200"],["$300.00","300"]], :class => "text-input tiny-input", :include_blank => true %> (FactorTrust recommends <%= @factor_trust['ApprovedAmount'] %>)
+      	</p>
+      	<p>
+      	  <input type="radio" name="accept_or_reject" id="accept_or_reject_reject" value="reject" /> <strong>I reject this customer for a payday loan due to&nbsp;&nbsp;</strong>
+      		<%= f.select :reject_reason, Customer::REJECT_REASONS.sort.push("Other (see comments)"), :class => "text-input short-input", :include_blank => true %>
+      	</p>
+      	<p>
+      	  <label for="comments">Comments</label>
+      	  <%= text_area_tag :comments %>
+      	</p>
+      	<p>
+      	  <strong>My password is&nbsp;&nbsp;</strong>
+      	  <%= password_field_tag :password, "", :class => "text-input short-input" %>&nbsp;&nbsp;
+      	  <input class="button" type="submit" id="accept_reject_button" value="Submit" style="display: none;" />
+      	</p>
+      <% end %>
+    </div>
+  </div>
+  <div class="clear"></div>
+<% end %>

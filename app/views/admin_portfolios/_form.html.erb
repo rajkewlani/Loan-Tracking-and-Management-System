@@ -1,0 +1,13 @@
+<%= error_messages_for :portfolio %>
+<fieldset class="column-left">
+  <p>
+    <%= f.label :name, "Portfolio Name" %>
+  	<%= f.text_field :name, :class => "text-input medium-input" %>
+  </p>
+   
+  <p>
+  	<input class="button" type="submit" value="Save Changes"/>
+  	or <%= link_to "Cancel", admin_portfolios_path %>
+  </p>
+</fieldset>
+<div class="clear"></div><!-- End .clear -->

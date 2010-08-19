@@ -1,0 +1,1 @@
+cd /home/deploy/plt/current && RAILS_ENV=production rake loans:daily_loan_snapshots

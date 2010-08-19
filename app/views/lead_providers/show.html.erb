@@ -1,0 +1,13 @@
+<% title(@lead_provider.name) %>
+<% subtitle("Lead submissions provided by #{@lead_provider.name}")%>
+
+<div class="content-box">
+	<div class="content-box-header">
+	  <h3>Lead Submissions</h3>
+		<div class="clear"></div>
+	</div>
+
+  <div class="content-box-content">
+    <%= render :partial => "/includes/customers_grid", :locals => { :customers => @customers } %>
+  </div>
+</div>

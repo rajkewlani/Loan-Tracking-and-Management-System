@@ -1,0 +1,29 @@
+<fieldset> <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+
+	<p>
+	  <%= f.label :subject, "Subject" %>
+		<%= f.text_field :subject, :class => "text-input long-input" %>
+	</p>
+	
+	<p>
+	  <%= f.label :content_type, "Content-Type" %>
+		<%= f.select :content_type, MailTemplate::CONTENT_TYPES, { }, { :class => "text-input small-input" } %>
+	</p>
+	
+	<p>
+	  <%= f.label :body, "Body" %>
+		<%= f.text_area :body, :rows => 15, :class => "text-input long-input" %>
+	</p>
+	
+	<p>
+	  Variables Available: ...
+	</p>
+	
+	<p>
+		<input class="button" type="submit" value="Save" />
+		or <%= link_to "Cancel", mail_templates_path %>
+	</p>
+
+</fieldset>
+
+<div class="clear"></div><!-- End .clear -->

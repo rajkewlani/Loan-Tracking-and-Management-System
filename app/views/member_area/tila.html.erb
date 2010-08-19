@@ -1,0 +1,6 @@
+<% content_for :head do %>
+<%= stylesheet("/stylesheets/truth_in_lending.css") %>
+<% end %>
+
+<%=  render :partial => "includes/truth_in_lending_agreement", :locals => { :loan => @loan, :customer => @loan.customer, :ip_address => request.remote_ip, :current_user => current_user } -%>
+

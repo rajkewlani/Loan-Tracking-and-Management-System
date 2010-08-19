@@ -1,0 +1,60 @@
+<% title "Message Categories" %>
+<% subtitle("List of Message Categories")%>
+
+<div class="content-box"><!-- Start Content Box -->
+
+	<div class="content-box-header">
+
+		<ul class="content-box-tabs">
+			<li><a href="#tab1" class="<%= default_tab_class('tab1') -%>" rel="history">List</a></li> <!-- href must be unique and match the id of target div -->
+			<li><a href="#tab2" class="<%= default_tab_class('tab2') -%>" rel="history">Create</a></li>
+		</ul>
+
+		<div class="clear"></div>
+
+	</div>
+<!-- End .content-box-header -->
+
+  <div class="content-box-content">
+
+    <%= display_flash(flash) %>
+
+  	<div class="tab-content <%= default_tab_class('tab1') -%>" id="tab1">
+	    <table>
+    		<thead>
+    			<tr>
+    			   <th>Name</th>
+    			   <th>&nbsp;</th>
+    			</tr>
+    		</thead>
+    		<tfoot>
+    			<tr>
+    				<td colspan="5">
+    					<%= will_paginate @message_categories %>
+    					<div class="clear"></div>
+    				</td>
+    			</tr>
+    		</tfoot>
+
+    		<tbody>
+    		<div id="message_category">
+    		  <% @message_categories.each do |message_category| %>
+    				<tr>
+    					<td><%= message_category.name %></td>
+    					<td nowrap class="icons">
+    					  <%= link_to image_tag("icons/pencil.png", :title => "Edit", :alt => "Edit"),  edit_message_category_path(message_category) %>
+					  <%= link_to image_tag("icons/cross.png", :title => "Delete", :alt => "Delete"), message_category_path(message_category), :method => :delete, :confirm => "Are you sure?" %>
+    					</td>
+    				</tr>
+    			<% end %>
+				</div>
+    		</tbody>
+    	</table>
+    </div>
+    <div class="tab-content <%= default_tab_class('tab2') -%>" id="tab2">
+      <% form_for :message_category do |f| %>
+        <%= render :partial => "form", :locals => { :f => f } %>
+      <% end %>
+    </div>
+  </div>
+</div>

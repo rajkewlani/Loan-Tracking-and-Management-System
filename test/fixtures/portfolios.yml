@@ -1,0 +1,15 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+ one:
+  name: $2M initial PPM
+  apr : 664.84
+  max_loan_amount : 500.00
+  min_loan_days : 4
+  max_loan_days : 84
+  max_extensions : 52
+  max_loans_per_year : 52
+  port_key : CGAOFZJ7HE
+#   column: value
+#
+# two:
+#   column: value

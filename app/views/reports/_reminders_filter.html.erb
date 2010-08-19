@@ -1,0 +1,19 @@
+<div class="content-box-header" style="height: 20px;">
+  <%= link_to_function "&nbsp;", "$(this).toggleClass('on'); $('#filters_bar').slideToggle(); $('#filters_button').slideToggle();", :id => "filters_toggle" %>
+  <div class="clear"></div>
+</div>
+
+<div id="filters_bar" style="display: none;">
+    <%- form_tag "/reminders_report", :method => :get do -%>
+      <ul>
+        <select name="filters[user_id]">
+          <option value="">All Users</option>
+          <%= options_for_select(User.find(:all, :conditions => ["role in ('underwriter','collections','garnishments')"]).collect { |user| [user.full_name, user.id]}) %>
+        </select>
+      </ul>
+      <div id="filters_button" style="float: right; display: none;">
+        <input type="image" src="/images/btn-apply-filters.png" border="0" width="126" height="22" style="width: 126px; height: 22px;" />
+      </div>
+    <%- end -%>
+    <div class="clear"></div>
+</div>

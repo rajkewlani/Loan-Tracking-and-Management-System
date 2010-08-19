@@ -1,0 +1,90 @@
+<%# This is for Department Label %>
+
+<table id="myteam">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>&nbsp;</th>
+      <th>Apps.</th>
+      <th>Yes</th>
+      <th>Hour</th>
+      <th>Day</th>
+      <th>Conv.</th>
+      <th>No</th>
+      <th>1st D</th>
+      <th>1st D%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!--
+    <tr>
+      <th>All</th>
+      <th>&nbsp;</th>
+      <th><%#=  @get_all_deparment_performance_data[:department_wise_loan] %></th>
+      <th><%#=  @get_all_deparment_performance_data[:department_wise_loan_approved] %></th>
+      <th><%#=  number_with_precision(@get_all_deparment_performance_data[:department_wise_loan_approved_per_hour].to_f, :precision => 2) %></th>
+      <th><%#=  number_with_precision(@get_all_deparment_performance_data[:department_wise_loan_approved_per_day], :precision => 2) %></th>
+      <th><%#=  @get_all_deparment_performance_data[:department_wise_percentage].to_f %><%= "%" %></th>
+      <th><%#=  @get_all_deparment_performance_data[:deparment_wise_loan_rejecet] %></th>
+      <th><%#=  @get_all_deparment_performance_data[:department_wise_loan_collections_on] %></th>
+      <th><%#=  number_with_precision(@get_all_deparment_performance_data[:department_wise_loan_funded_on].to_f, :precision => 2) %></th>
+    </tr>
+    -->
+
+    <% for perf in @department_performance_data %>
+    <tr>
+      <th><%= perf[:label] -%></th>
+      <th>&nbsp;</th>
+      <th><%= perf[:loans] %></th>
+      <th><%= perf[:approved] %></th>
+      <th><%= number_with_precision(perf[:per_hour], :precision => 2) %></th>
+      <th><%= number_with_precision(perf[:per_day], :precision => 2) %></th>
+      <th><%= number_to_percentage(perf[:conversion_ratio], :precision => 2) %></th>
+      <th><%= perf[:denied] %></th>
+      <th><%= number_with_precision(perf[:defaulted], :precision => 2) %></th>
+      <th><%=  number_to_percentage(perf[:default_percentage], :precision => 2) %></th>
+    </tr>
+    <% end %>
+  </tbody>
+
+<%#= -------------------------This is for MyTeam Label---------------------------- %>
+   <thead>
+    <tr>
+      <th colspan="10" style="font-size: 18px;">
+	            My Team
+      </th>
+    </tr>
+  </thead>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>&nbsp;</th>
+      <th>Apps.</th>
+      <th>Yes</th>
+      <th>Hour</th>
+      <th>Day</th>
+      <th>Conv.</th>
+      <th>No</th>
+      <th>1st D</th>
+      <th>1st D%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%  for team_member_data in @get_team_performance_data %>
+      <% logger.info " team_member_data: #{team_member_data.inspect}" %>
+    <tr <% if team_member_data[:id] == current_user.id %>style="background-color: #9ADF8F"<% end %>>
+      <th><%= team_member_data[:first_name] %></th>
+      <th>&nbsp;</th>
+     
+      <th><%= team_member_data[:member_loan_count] %></th>
+      <th><%= team_member_data[:loan_approved] %></th>
+      <th><%= number_with_precision(team_member_data[:approved_loan_per_hour], :precision => 2) %></th>
+      <th><%= team_member_data[:approved_loan_per_day] %></th>
+      <th><%= team_member_data[:percentage_of_loan_approved].to_f %><%="%" %></th>
+      <th><%= team_member_data[:loan_rejected] %></th>
+      <th><%= team_member_data[:loan_collections_on] %></th>
+      <th><%= number_to_percentage(team_member_data[:percentage_funded_on].to_f, :precision => 2) %></th>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

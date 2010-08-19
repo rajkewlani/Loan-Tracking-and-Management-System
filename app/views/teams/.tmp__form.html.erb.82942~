@@ -1,0 +1,184 @@
+<script type="text/javascript">
+
+//Filteration of users according to role
+
+function set_available_users(team_role){
+	role = $('#team_role').val();
+	if(role ==''){
+		alert('Please Select Role');
+		return false;
+	}
+	new Ajax.Updater('new_available_users', '/teams/getusers', { asynchronous:1, evalScripts:true,
+		method: 'post',
+		parameters: '?role=' + role,
+		onFailure: reportError,
+		onSuccess: reportSuccess
+	});
+}
+
+function reportError(request)
+{
+	alert('Please Select Role')
+}
+
+function reportSuccess(request)
+{
+	document.getElementById('new_available_users').innerHTML=request.responseText
+	document.getElementById('user_ids').innerHTML=''
+}
+
+//Move users from assign to available
+
+function moveoutid()
+{
+	var sda = document.getElementById('user_ids');;
+	var len = sda.length;
+	var sda1 = document.getElementById('available_users');
+	for(var j=0; j<len; j++)
+	{
+		if(sda[j].selected)
+		{
+			var tmp = sda.options[j].text;
+			var tmp1 = sda.options[j].value;
+			sda.remove(j);
+			j--;
+			var y=document.createElement('option');
+			y.text=tmp;
+			y.value=tmp1;
+			
+			try
+			{sda1.add(y,null);
+			}
+			catch(ex)
+			{
+			sda1.add(y);
+			}
+		}
+	}
+}
+
+//Move users from available to assign
+
+function moveinid()
+{
+	var sda = document.getElementById('user_ids');
+	var sda1 = document.getElementById('available_users');
+	var len = sda1.length;
+	for(var j=0; j<len; j++)
+	{
+		if(sda1[j].selected)
+		{
+			var tmp = sda1.options[j].text;
+			var tmp1 = sda1.options[j].value;
+			sda1.remove(j);
+			j--;
+			var y=document.createElement('option');
+			y.text=tmp;
+			y.value=tmp1;
+			
+			try
+			{
+				sda.add(y, null);
+			}
+			catch(ex)
+			{
+				sda.add(y);	
+			}
+		}
+	}
+}
+//set assign users while submit form
+
+function submit_form()
+{
+	var sda = document.getElementById('user_ids');
+	var len = sda.length;
+	var str='';
+	
+	for (var j = 0; j < len; j++) {
+		var tmp1 = sda.options[j].value;
+		str+=tmp1+',';
+	}
+	str=str.substr(0,str.length-1);
+	document.getElementById('userids').value=str;
+}
+
+function selectAll(id){
+	var sda = document.getElementById(id);
+	var len = sda.length;
+	for (var j = 0; j < len; j++) {
+		sda[j].selected=true
+	}
+}
+
+function selectNone(id){
+	var sda = document.getElementById(id);
+	var len = sda.length;
+	for (var j = 0; j < len; j++) {
+		sda[j].selected=false
+	}
+}
+</script>
+
+
+<%= error_messages_for :team %>
+<fieldset class="column-left">
+  <p>
+    <%= f.label :name, "Team Name" %>
+  	<%= f.text_field :name, :class => "text-input medium-input" %>
+  </p>
+  <p>
+    <%= f.label :role, "Role" %>
+  	<%= select(:team, :role, Team::ROLES.map{|r|[r.capitalize,r]}, {:include_blank => true}, {:onchange => "set_available_users(team_role);"}) %>
+  </p>
+  <input type="hidden" id="userids" name="userids">
+  <div style="float:inherit;width:700px;padding-bottom:20px;">
+	  <div class='panel' id="assign_users">
+		  <%= f.label :users, "Assign Users" %>
+		<p>Select :
+        	<a href="" onclick='selectAll("user_ids");return false;'>all</a>
+        	<a href="" onclick='selectNone("user_ids");return false;'>none</a>
+      	</p>
+			<select id="user_ids" name="user_ids[]" style="padding:5px;min-height:150px;width:200px;" multiple>
+			  <%if params[:id]
+				  @team2 = User.find_all_by_team_id(params[:id])%>
+				  <%@team2.each do |team2| %>
+						<option id="<%=team2.id%>" value="<%=team2.id%>" ><%=team2.first_name%>&nbsp;<%=team2.last_name%></option>
+				  <%end%>
+			  <%end%>
+			</select>
+		</div>
+		<div style="float:left;padding-top:100px;">
+			<input type=button value="<<" onclick=moveinid()><br><br>
+			<input type=button value=">>" onclick=moveoutid() style="valign:top">
+		</div>
+	  	
+		<div class='panel' style="margin-left:10px;" id="new_available_users">
+			<%if params[:id]%>
+			<%= f.label :users, "Available Users" %>
+			<p>Select :
+        		<a  href="" onclick='selectAll("available_users");return false;'>all</a>
+        		<a  href="" onclick='selectNone("available_users");return false;'>none</a>
+      		</p>
+			<select id="available_users" style="padding:5px;min-height:150px;width:200px;" multiple>
+			  <%
+			  if params[:id]
+			    @role1=Team.find(params[:id], :select => "role")
+			    @team1=User.find_by_sql("select * from users where role = '#{@role1.role}' and (team_id NOT IN ("+params[:id]+") or team_id IS NULL)")
+			  else
+			    @team1=User.find(:all, :order => "last_name")
+			  end
+			%>
+			  <%for team in @team1%>
+			    <option style="height:18px;cursor:pointer;" id="<%=team.id%>" value="<%=team.id%>" ><%=team.first_name%>&nbsp;<%=team.last_name%></option>
+			  <%end%>
+			</select>
+			<%end%>
+		</div>
+  </div>
+  <p>
+  	<input class="button" type="submit" value="Save Changes" onclick="submit_form()" />
+  	or <%= link_to "Cancel", teams_path %>
+  </p>
+</fieldset>
+<div class="clear"></div><!-- End .clear -->

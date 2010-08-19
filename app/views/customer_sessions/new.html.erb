@@ -1,0 +1,27 @@
+<%# title "Login" %>
+<div class="form">
+<% form_tag customer_sessions_path do %>
+  <%#= display_flash(flash) %>
+<fieldset>
+  <legend>Login</legend>
+  <p>
+    <%= label_tag :login, "Email", :style => "line-height: 32px;" %>
+    <%= text_field_tag :login, @login, :class => "text-input" %>
+  </p>
+  <div class="clear"></div>
+  <p>
+    <%= label_tag :password, "Password", :style => "line-height: 32px;" %>
+    <%= password_field_tag :password, "", :class => "text-input" %>
+  </p>
+  <div class="clear"></div>
+  <p id="remember-password">
+    <%= check_box_tag :remember_me -%> Remember me
+  </p>
+  <div class="clear"></div>
+  <p>
+          <input class="button" type="submit" value="Sign In" />
+  </p>
+</fieldset>
+  <div class="clear"></div>
+<% end %>
+</div>

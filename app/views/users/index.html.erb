@@ -1,0 +1,72 @@
+<% title "User Accounts" %>
+<% subtitle("List of the user accounts")%>
+
+<div class="content-box"><!-- Start Content Box -->
+
+	<div class="content-box-header">
+
+		<ul class="content-box-tabs">
+			<li><a href="#tab1" class="<%= default_tab_class('tab1') -%>" rel="history">List</a></li> <!-- href must be unique and match the id of target div -->
+			<li><a href="#tab2" class="<%= default_tab_class('tab2') -%>" rel="history">Create</a></li>
+		</ul>
+
+		<div class="clear"></div>
+
+	</div> <!-- End .content-box-header -->
+
+  <div class="content-box-content">
+    
+    <%= display_flash(flash) %>
+  	
+  	<div class="tab-content <%= default_tab_class('tab1') -%>" id="tab1">
+
+	    <table>
+
+    		<thead>
+    			<tr>
+    			   <th>Name</th>
+    			   <th>Role</th>
+    			   <th>Last Login At</th>
+     			   <th>Last Login IP</th>
+    			   <th>&nbsp;</th>
+    			</tr>
+
+    		</thead>
+
+    		<tfoot>
+    			<tr>
+    				<td colspan="5">
+    					<%= will_paginate @users %>
+    					<div class="clear"></div>
+    				</td>
+    			</tr>
+    		</tfoot>
+
+    		<tbody>
+    		  <% @users.each do |user| %>
+    				<tr>
+    					<td><%= user.full_name %></td>
+    					<td><%= user.role.capitalize %></td>
+    					<td><%= user.last_login_at.strftime("%m/%d/%y at %I:%M:%S %p") unless user.last_login_at.blank? %>&nbsp;</td>
+    					<td><%= user.last_login_ip %>&nbsp;</td>
+    					<td nowrap class="icons">
+    					  <%= link_to image_tag("icons/pencil.png", :title => "Edit", :alt => "Edit"), edit_user_path(user) %>
+    					  <%= link_to image_tag("icons/cross.png", :title => "Delete", :alt => "Delete"), user_path(user), :method => :delete, :confirm => "Are you sure?" %>
+    					</td>
+    				</tr>
+    			<% end %>
+    		</tbody>
+
+    	</table>
+
+    </div>
+    
+    <div class="tab-content <%= default_tab_class('tab2') -%>" id="tab2">
+      <% form_for :user do |f| %>
+        <%= render :partial => "form", :locals => { :f => f } %>
+      <% end %>
+    </div>
+
+  </div>
+
+</div>

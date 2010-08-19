@@ -1,0 +1,85 @@
+<table>
+  <thead>
+    <tr>
+      <th colspan="8" style="font-size: 18px;">Average</th>
+    </tr>
+  </thead>
+</table>
+<table id="yearly_avg">
+  <thead>
+    <tr>
+      <th>Portfolio</th>
+      <th>&nbsp;</th>
+      <th>New Loans</th>
+      <th>Reloans</th>
+      <th>RL %</th>
+      <th>Total</th>
+      <th>Total LTD</th>
+      <th>Loans Out</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>All</th>
+      <th>&nbsp;</th>
+      <th><%= @trend_avg[:new_loan_avg] %></th>
+      <th><%= @trend_avg[:reloan_avg] %></th>
+      <% if not @trend_avg[:reloan_perc_avg] == 0 %>
+        <th><%= @trend_avg[:reloan_perc_avg].round(2) %> %</th>
+      <% else %>
+        <th><%= @trend_avg[:reloan_perc_avg] %> %</th>
+      <% end %>
+      <th><%= @trend_avg[:total_loan_avg] %></th>
+      <th>N/A</th>
+      <th><%= @trend_avg[:loans_out_avg] %></th>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr><td colspan="8"></td></tr>
+  </thead>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th colspan="8" style="font-size: 18px;">Trend</th>
+    </tr>
+  </thead>
+</table>
+<table id="yearly_trend">
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>&nbsp;</th>
+      <th>New Loans</th>
+      <th>Reloans</th>
+      <th>RL %</th>
+      <th>Total</th>
+      <th>Total Loans</th>
+      <th>Loans Out</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @sum_yearly_data.each do |yearly_data| %>
+    <tr>
+      <th><%= yearly_data[:year_number] %></th>
+      <% if yearly_data[:total_loans_today] > @trend_avg[:total_loan_avg] %>
+        <th><%= image_tag("/images/icons/up.png", :border => 0, :height => 12, :width => 12) %></th>
+      <% else %>
+        <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+      <% end %>
+      <th><%= yearly_data[:new_loans_today] %></th>
+      <th><%= yearly_data[:reloans_today] %></th>
+      <% if not yearly_data[:reloan_percentage] == 0 %>
+        <th><%= yearly_data[:reloan_percentage].round(2) %> %</th>
+      <% else %>
+        <th><%= yearly_data[:reloan_percentage] %> %</th>
+      <% end %>
+      <th><%= yearly_data[:total_loans_today] %></th>
+      <th><%= yearly_data[:total_loans_to_date] %></th>
+      <th><%= yearly_data[:loans_out_today] %></th>
+    </tr>
+    <%end%>
+  </tbody>
+</table>

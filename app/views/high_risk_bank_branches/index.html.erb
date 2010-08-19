@@ -1,0 +1,83 @@
+<% content_for :head do %>
+<script type="text/javascript">
+  /*
+  $(document).ready(function() {
+    $('#new_high_risk_bank_branch').submit(function() {
+      alert('Posting Form');
+      $.post($(this).attr('action'),$().serialize(),function(returned_data){
+        $('#tab2').html(returned_data);
+      });
+      return false;
+    });
+  });
+  */
+</script>
+<% end %>
+
+<% title "High Risk Bank Branches" %>
+
+<div class="content-box"><!-- Start Content Box -->
+
+	<div class="content-box-header">
+
+		<ul class="content-box-tabs">
+			<li><a href="#tab1" class="<%= default_tab_class('tab1') -%>" rel="history">List</a></li> <!-- href must be unique and match the id of target div -->
+			<li><a href="#tab2" class="<%= default_tab_class('tab2') -%>" rel="history">Create</a></li>
+		</ul>
+
+		<div class="clear"></div>
+
+	</div> <!-- End .content-box-header -->
+
+  <div class="content-box-content">
+
+    <%= display_flash(flash) %>
+
+  	<div class="tab-content <%= default_tab_class('tab1') -%>" id="tab1">
+
+	    <table>
+
+    		<thead>
+    			<tr>
+    			   <th>ABA Routing Number</th>
+    			   <th>Branch Name</th>
+    			   <th>&nbsp;</th>
+    			</tr>
+
+    		</thead>
+
+    		<tfoot>
+    			<tr>
+    				<td colspan="5">
+    					<%= will_paginate @branches %>
+    					<div class="clear"></div>
+    				</td>
+    			</tr>
+    		</tfoot>
+
+    		<tbody>
+                        <% @branches.each do |branch| %>
+    				<tr>
+    					<td><%= branch.aba_routing_number %></td>
+    					<td><%= branch.name %></td>
+    					<td nowrap class="icons">
+    					  <%= link_to image_tag("icons/pencil.png", :title => "Edit", :alt => "Edit"), edit_high_risk_bank_branch_path(branch) %>
+    					  <%= link_to image_tag("icons/cross.png", :title => "Delete", :alt => "Delete"), high_risk_bank_branch_path(branch), :method => :delete, :confirm => "Are you sure?" %>
+    					</td>
+    				</tr>
+    			<% end %>
+    		</tbody>
+
+    	</table>
+
+    </div>
+
+    <div class="tab-content <%= default_tab_class('tab2') -%>" id="tab2">
+      <% form_for HighRiskBankBranch.new do |f| %>
+        <%= render :partial => "form", :locals => { :f => f } %>
+      <% end %>
+    </div>
+
+  </div>
+
+</div>

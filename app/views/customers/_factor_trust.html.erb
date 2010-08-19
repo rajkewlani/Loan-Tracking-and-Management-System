@@ -1,0 +1,224 @@
+<% if @factor_trust %>
+  <div style="height: 420px; overflow: auto; padding-right: 10px;">
+    <ul class="show_details">
+      <li class="<%= cycle('odd','even') %>">
+        <label>Original XML Response:</label>
+        <%= link_to "Click to open", factor_trust_path(customer.factor_trust, :format => :xml) , :target => "_blank" %>
+      </li>
+      <% [
+        ["Report Link", link_to("Click to open", @factor_trust['ReportLink'], :target => "_blank")],
+        ["Lend Protect Score", @factor_trust['LendProtectScore']],
+        ["Transaction Status", @factor_trust['TransactionStatus']],
+        ["Approved Amount", @factor_trust['ApprovedAmount']],
+        ["Client Transaction ID", @factor_trust['ClientTransactionID']],
+        ["Transaction Date", @factor_trust['TransactionDate']],
+        ["Application ID", @factor_trust['ApplicationID']],
+        ["Processed Services Status", @factor_trust['ProcessedServicesStatus']]
+        ].each do |data|
+      %>
+      <li class="<%= cycle('odd','even') %>">
+        <label><%= h data[0] %>:</label>
+        <%= data[1] %>&nbsp;
+      </li>
+      <% end %>
+    </ul>
+    
+    <% begin %>
+    <table width="100%" class="tight">
+    	<thead>
+        <tr>
+          <th class="small" nowrap>Response Codes</th>
+          <th class="small" nowrap>Description</th>
+          <th class="small" nowrap>Service</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @factor_trust['ResponseCodes']['Response'].each do |resp| %>
+          <tr>
+            <td><%= h resp['Code'] %></td>
+            <td><%= h resp['Description'] %></td>
+            <td><%= h resp['Service'] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <% rescue; end %>
+  
+    <% if @factor_trust['LoanPerformance'] && @factor_trust['SFLoanPerformance'] && @factor_trust['OLLoanPerformance'] %>
+    <table width="100%" class="tight">
+    	<thead>
+        <tr>
+          <th class="small" nowrap>Loan Performance</th>
+          <th class="small" nowrap width="75" style="text-align: center;">Total</th>
+          <th class="small" nowrap width="75" style="text-align: center;">Store Front</th>
+          <th class="small" nowrap width="75" style="text-align: center;">Online</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Number of Customers on Bank Account:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['NumberofCustomersonBankAccount'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFNumberofCustomersonBankAccount'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLNumberofCustomersonBankAccount'] %></td>
+        </tr>
+        <tr>
+          <td>Last Payment Date:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['LastPaymentDate'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFLastPaymentDate'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLLastPaymentDate'] %></td>
+        </tr>
+        <tr>
+          <td>DL Mismatch:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['DLMismatch'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFDLMismatch'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLDLMismatch'] %></td>
+        </tr>
+        <tr>
+          <td>Total Number of Loans Delinquent:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['TotalNumberofLoansDelinquent'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFTotalNumberofLoansDelinquent'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLTotalNumberofLoansDelinquent'] %></td>
+        </tr>
+        <tr>
+          <td>Number of Loans in Collections:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['NumberofLoansinCollections'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFNumberofLoansinCollections'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLNumberofLoansinCollections'] %></td>
+        </tr>
+        <tr>
+          <td>Customer DDA Count:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['CustomerDDACount'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFCustomerDDACount'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLCustomerDDACount'] %></td>
+        </tr>
+        <tr>
+          <td>Total Number of Loans Originated:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['TotalNumberofLoansOriginated'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFTotalNumberofLoansOriginated'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLTotalNumberofLoansOriginated'] %></td>
+        </tr>
+        <tr>
+          <td>Bank Account Last Return Code:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['BankAccountLastReturnCode'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFBankAccountLastReturnCode'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLBankAccountLastReturnCode'] %></td>
+        </tr>
+        <tr>
+          <td>Number of Loans Paid Off:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['NumberofLoansPaidOff'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFNumberofLoansPaidOff'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLNumberofLoansPaidOff'] %></td>
+        </tr>
+        <tr>
+          <td>Number of Loans Current:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['NumberofLoansCurrent'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFNumberofLoansCurrent'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLNumberofLoansCurrent'] %></td>
+        </tr>
+        <tr>
+          <td>Residence State Mismatch:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['ResidenceStateMismatch'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFResidenceStateMismatch'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLResidenceStateMismatch'] %></td>
+        </tr>
+        <tr>
+          <td>Payroll Frequency Mismatch:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['PayrollFrequencyMismatch'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFPayrollFrequencyMismatch'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLPayrollFrequencyMismatch'] %></td>
+        </tr>
+        <tr>
+          <td>High Risk ABA:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['HighRiskABA'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFHighRiskABA'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLHighRiskABA'] %></td>
+        </tr>
+        <tr>
+          <td>Last Date Application Received:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['LastDateApplicationReceived'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFLastDateApplicationReceived'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLLastDateApplicationReceived'] %></td>
+        </tr>
+        <tr>
+          <td>Customer Address Count:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['CustomerAddressCount'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFCustomerAddressCount'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLCustomerAddressCount'] %></td>
+        </tr>
+        <tr>
+          <td>Last Delinquent Date:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['LastDelinquentDate'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFLastDelinquentDate'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLLastDelinquentDate'] %></td>
+        </tr>
+        <tr>
+          <td>Bankruptcy:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['Bankruptcy'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFBankruptcy'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLBankruptcy'] %></td>
+        </tr>
+        <tr>
+          <td>Bank Account Mismatch:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['BankAccountMismatch'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFBankAccountMismatch'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLBankAccountMismatch'] %></td>
+        </tr>
+        <tr>
+          <td>Bank Account Last Return Date:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['BankAccountLastReturnDate'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFBankAccountLastReturnDate'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLBankAccountLastReturnDate'] %></td>
+        </tr>
+        <tr>
+          <td>Number of New Loans Originated:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['NumberofNewLoansOriginated'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFNumberofNewLoansOriginated'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLNumberofNewLoansOriginated'] %></td>
+        </tr>
+        <tr>
+          <td>Number of Applications:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['NumberofApplications'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFNumberofApplications'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLNumberofApplications'] %></td>
+        </tr>
+        <tr>
+          <td>Number of Loans Past Due:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['NumberofLoansPastDue'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFNumberofLoansPastDue'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLNumberofLoansPastDue'] %></td>
+        </tr>
+        <tr>
+          <td>Number of Open Loans:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['NumberofOpenLoans'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFNumberofOpenLoans'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLNumberofOpenLoans'] %></td>
+        </tr>
+        <tr>
+          <td>SSN Mismatch:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['SSNMismatch'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFSSNMismatch'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLSSNMismatch'] %></td>
+        </tr>
+        <tr>
+          <td>Total OS Balance:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['TotalOSBalance'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFTotalOSBalance'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLTotalOSBalance'] %></td>
+        </tr>
+        <tr>
+          <td>Last Payment Amount:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['LastPaymentAmount'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFLastPaymentAmount'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLLastPaymentAmount'] %></td>
+        </tr>
+        <tr>
+          <td>Total Amount Delinquent:</td>
+          <td class="center"><%= @factor_trust['LoanPerformance']['TotalAmountDelinquent'] %></td>
+          <td class="center"><%= @factor_trust['SFLoanPerformance']['SFTotalAmountDelinquent'] %></td>
+          <td class="center"><%= @factor_trust['OLLoanPerformance']['OLTotalAmountDelinquent'] %></td>
+        </tr>
+      </tbody>
+    </table>
+    <% end %>
+  </div>
+<% end %>

@@ -1,0 +1,38 @@
+Flash Helper
+============
+
+A simple plugin that displays flash messages within a DIV tag, and ignore
+if the flash hash isn't set.
+
+
+Example
+=======
+
+flash[:notice] = "User Created Successfully!"
+
+<%= display_flash(flash) %>
+# <div id="flash_notice">User Created Successfully!</div>
+
+
+Instructions
+============
+
+Add the following to your stylesheet:
+
+#flash_notice, #flash_error {
+  padding: 5px 8px;
+  margin: 10px 0;
+}
+
+#flash_notice {
+  background-color: #CFC;
+  border: solid 1px #6C6;
+}
+
+#flash_error {
+  background-color: #FCC;
+  border: solid 1px #C66;
+}
+
+
+Copyright (c) 2009 Eric Berry, released under the MIT license

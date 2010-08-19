@@ -1,0 +1,445 @@
+<script type="text/javascript">
+	$(function() {
+		$("#lead_next_pay_date_1").datepicker({
+		    minDate: '+1D',
+		    maxDate: '+1M',
+		    beforeShowDay: noWeekendsOrHolidays });
+		$("#lead_next_pay_date_2").datepicker({
+    		minDate: '+8D',
+    		maxDate: '+1M +25D',
+    		beforeShowDay: noWeekendsOrHolidays });
+	});
+	natDays = [
+	  [10, 12, 2009],
+    [11, 11, 2009],
+    [11, 29, 2009],
+    [12, 25, 2009],
+    [01, 01, 2010],
+    [01, 18, 2010],
+    [02, 15, 2010],
+    [05, 31, 2010],
+    [07, 04, 2010],
+    [07, 05, 2010],
+    [09, 06, 2010],
+    [10, 11, 2010],
+    [11, 11, 2010],
+    [11, 25, 2010],
+    [12, 24, 2010],
+    [12, 25, 2010]
+  ];
+  function nationalDays(date) {
+    for (i = 0; i < natDays.length; i++) {
+      if (date.getMonth() == natDays[i][0] - 1
+        && date.getDate() == natDays[i][1]
+        && date.getFullYear() == natDays[i][2]) {
+          return [false, 'a'];
+      }
+    }
+    return [true, ''];
+  }
+	function noWeekendsOrHolidays(date) {
+    var noWeekend = $.datepicker.noWeekends(date);
+    if (noWeekend[0]) {
+      return nationalDays(date);
+    } else {
+      return noWeekend;
+    }
+  }
+</script>
+<%= stylesheet("/ui-lightness/jquery-ui-1.7.2.custom.css") %>
+<%= javascript("jquery-ui-1.7.2.custom.min.js") %>
+
+
+<div class="form">
+<% form_for :customer do |f| %>
+<%= error_messages_for :customer %>
+<input type="hidden" name="customer_id" id="customer_id" value="<%=@customer.id%>">
+    <% if @customer.errors.length > 0 %>
+      <div id="flash_notice" style="margin: 0px 40px 10px 40px;">Please correct the fields below in red</div>
+    <% end %>
+
+    <fieldset>
+      <legend>New Customer Information</legend>
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:loan_amount) ? 'error' : '' %>">
+          <%= f.label :requested_loan_amount, "Loan Amount<span class=\"required\">*</span>" %>
+          <%= f.select :requested_loan_amount, [100,150,200,250,300,350,400,450,500].map{|n|[number_to_currency(n), n]}, :include_blank => true %>
+          <span style="font-size: 11px; color: #666;">$300 max for first-time borrowers</span>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:mothers_maiden_name) ? 'error' : '' %>">
+          <%= f.label :mothers_maiden_name, "Mother's Maiden Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :mothers_maiden_name,:value => @customer.mothers_maiden_name, :size => 15 %>
+        </div>
+        <div class="form_field">
+          <%= f.label :gender, "Gender (optional)" %>
+          <%= f.select :gender, [["Female", "f"], ["Male", "m"]], :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:first_name) ? 'error' : '' %>">
+          <%= f.label :first_name, "First Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :first_name, :size => 7 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:middle_name) ? 'error' : '' %>">
+          <%= f.label :middle_name, "Middle Name" %>
+          <%= f.text_field :middle_name, :size => 7 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:last_name) ? 'error' : '' %>">
+          <%= f.label :last_name, "Last Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :last_name, :size => 7 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= (@customer.errors.invalid?(:ssn_1) || @customer.errors.invalid?(:ssn_2) || @customer.errors.invalid?(:ssn_3)) ? 'error' : '' %>">
+		  
+		  <%= f.label :ssn, "Social Security Number<span class=\"required\">*</span>" %>
+          <%= f.text_field :ssn_1, :size => 3 ,:value => @customer.ssn[0..2]%> -
+          <%= f.text_field :ssn_2, :size => 2 ,:value => @customer.ssn[-6..-4] %> -
+          <%= f.text_field :ssn_3, :size => 4,:value => @customer.ssn[-4..-1]%>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:email) ? 'error' : '' %>">
+          <%= f.label :email, "Email<span class=\"required\">*</span>" %>
+          <%= f.text_field :email, :size => 33 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:dl_number) ? 'error' : '' %>">
+          <%= f.label :dl_number, "Drivers License Number<span class=\"required\">*</span>" %>
+          <%= f.text_field :dl_number, :size => 18 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:dl_state) ? 'error' : '' %>">
+          <%= f.label :dl_state, "State<span class=\"required\">*</span>" %>
+          <%= f.select :dl_state, Customer::US_STATES.map{|u|[u[1],u[1]]}, :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:address) ? 'error' : '' %>">
+          <%= f.label :address, "Address<span class=\"required\">*</span>" %>
+          <%= f.text_field :address, :size => 33 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:dob) ? 'error' : '' %>">
+          <%= f.label :birth_date, "Date of Birth<span class=\"required\">*</span>" %>
+          <%= f.date_select :birth_date, :order => [:month, :day, :year], :start_year => (Time.now.year - 80), :end_year => (Time.now - 18.years).year, :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:city) ? 'error' : '' %>">
+          <%= f.label :city, "City<span class=\"required\">*</span>" %>
+          <%= f.text_field :city, :size => 14 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:state) ? 'error' : '' %>">
+          <%= f.label :state, "State<span class=\"required\">*</span>" %>
+          <%= f.select :state, Customer::US_STATES.map{|s| s[1]},{:value=> @customer.state},:include_blank => true %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:zip) ? 'error' : '' %>">
+          <%= f.label :zip, "ZIP<span class=\"required\">*</span>" %>
+          <%= f.text_field :zip, :size => 5, :maxlength => 5 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= (@customer.errors.invalid?(:home_phone_area_code) || @customer.errors.invalid?(:home_phone_prefix) || @customer.errors.invalid?(:home_phone_suffix)) ? 'error' : '' %>">
+		  <%= f.hidden_field :home_phone, :value => @customer.home_phone %>
+		  <%= f.label :home_phone, "Home Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :home_phone_area_code, :size => 3,:value => @customer.home_phone[0..2], :maxlength => 3 %> -
+          <%= f.text_field :home_phone_prefix, :size => 3,:value => @customer.home_phone[-7..-5], :maxlength => 3 %> -
+          <%= f.text_field :home_phone_suffix, :size => 4,:value => @customer.home_phone[-4..-1], :maxlength => 4 %>
+		  
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:own_or_rent) ? 'error' : '' %>">
+          <%= f.label :residence_type, "Own or Rent?<span class=\"required\">*</span>" %>
+          <%= f.select :residence_type, [["Own", "OWN"], ["Rent", "RENT"]], :include_blank => true %>
+		  
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:months_at_address) ? 'error' : '' %>">
+          <%= f.label :months_at_address, "Time at Address<span class=\"required\">*</span>" %>
+          <%= f.select :months_at_address, Customer::MONTHS_AT,{:value=>@customer.months_at_address}, :include_blank => true %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= (@customer.errors.invalid?(:work_phone_area_code) || @customer.errors.invalid?(:work_phone_prefix) || @customer.errors.invalid?(:work_phone_suffix)) ? 'error' : '' %>">
+		   <%= f.hidden_field :work_phone, :value => @customer.work_phone %>
+		  <%= f.label :work_phone, "Work Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :work_phone_area_code, :size => 3,:value => @customer.work_phone[0..2], :maxlength => 3 %> -
+          <%= f.text_field :work_phone_prefix, :size => 3,:value => @customer.work_phone[-7..-5], :maxlength => 3 %> -
+          <%= f.text_field :work_phone_suffix, :size => 4,:value => @customer.work_phone[-4..-1], :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:monthly_housing_payment) ? 'error' : '' %>">
+          <%= f.label :monthly_residence_cost, "Monthly Mortgage or Rent Payment<span class=\"required\">*</span>" %>
+          <%= f.text_field :monthly_residence_cost, :size => 5 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:best_time_to_call) ? 'error' : '' %>">
+          <%= f.label :best_time_to_call, "Best Time To Call" %>
+          <%= f.select :best_time_to_call, [["Anytime", "anytime"], ["Morning", "morning"],["Afternoon","afternoon"],["Evening","evening"]], {:values=>@customer.best_time_to_call}, :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+    </fieldset>
+
+    <fieldset>
+      <legend>Banking Information</legend>
+      <div class="form_left" style="width: 260px;">
+        <div class="form_field <%= @customer.errors.invalid?(:bank_name) ? 'error' : '' %>">
+          <%= f.label :bank_name, "Bank Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :bank_name,:value => @bank_info.bank_name,:size => 24 %>
+        </div>
+        <div class="clear" style="padding-top: 2px;"></div>
+
+        <div class="form_field <%= @customer.errors.invalid?(:bank_routing_number) ? 'error' : '' %>">
+          <%= f.label :bank_aba_number, "Bank Routing Number<span class=\"required\">*</span>" %>
+          <%= f.text_field :bank_aba_number,:value => @bank_info.bank_aba_number, :size => 24 %>
+        </div>
+        <div class="clear" style="padding-top: 2px;"></div>
+
+        <div class="form_field <%= @customer.errors.invalid?(:bank_account_number) ? 'error' : '' %>">
+          <%= f.label :bank_account_number, "Bank Account Number<span class=\"required\">*</span>" %>
+          <%= f.text_field :bank_account_number,:value => @bank_info.bank_account_number, :size => 24 %>
+        </div>
+        <div class="clear" style="padding-top: 2px;"></div>
+
+        <div class="form_field <%= @customer.errors.invalid?(:bank_account_type) ? 'error' : '' %>">
+          <%= f.label :bank_account_type, "Bank Account Type<span class=\"required\">*</span>" %>
+          <%= f.select :bank_account_type, [["Checking", "CHECKING"], ["Savings", "SAVINGS"]],{:value => @bank_info.bank_account_type}, :include_blank => true %>
+		</div>
+        <div class="clear" style="padding-top: 2px;"></div>
+
+        <div class="form_field <%= @customer.errors.invalid?(:months_at_bank) ? 'error' : '' %>">
+          <%= f.label :months_at_bank, "Bank Account Length<span class=\"required\">*</span>" %>
+          <%= f.select :months_at_bank, Customer::MONTHS_AT, {:value => @bank_info.months_at_bank}, :include_blank => true %>
+		</div>
+      </div>
+      <div class="form_right" style="width: 410px;">
+        <div class="form_field">
+          <%= image_tag("check_sample.png", :border => 0, :width => 400) %>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Employment Information</legend>
+      <div class="form_left">
+        <div class="employer_name <%= @customer.errors.invalid?(:employer_name) ? 'error' : '' %>">
+          <%= f.label :employer_name, "Employer Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_name, :size => 33 %>
+        </div>
+      </div>
+	 
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:pay_amount) ? 'error' : '' %>">
+          <%= f.label :montly_income, "Monthly Net Income<span class=\"required\">*</span>" %>
+          <%= f.select :monthly_income, Customer::MONTHLY_INCOMES, {:value=> @customer.monthly_income}, :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:employer_address) ? 'error' : '' %>">
+          <%= f.label :employer_address, "Address<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_address, :size => 33 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:pay_frequency) ? 'error' : '' %>">
+          <%= f.label :pay_frequency, "Income Frequency<span class=\"required\">*</span>" %>
+          <%= f.select :pay_frequency, Customer::PAY_FREQUENCY, :include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:employer_city) ? 'error' : '' %>">
+          <%= f.label :empmloyer_city, "City<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_city, :size => 14 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:employer_state) ? 'error' : '' %>">
+          <%= f.label :employer_state, "State<span class=\"required\">*</span>" %>
+          <%= f.select :employer_state, Customer::US_STATES.map{|u|[u[1],u[1]]},{:value=> @customer.employer_state}, :include_blank => true %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:employer_zip) ? 'error' : '' %>">
+          <%= f.label :employer_zip, "ZIP<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_zip, :size => 5, :maxlength => 5 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:next_pay_date_1) ? 'error' : '' %>">
+          <%= f.label :next_pay_date_1, "Next Pay Date<span class=\"required\">*</span>" %>
+          <%= f.text_field :next_pay_date_1, :size => 14 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= (@customer.errors.invalid?(:employer_phone_area_code) || @customer.errors.invalid?(:employer_phone_prefix) || @customer.errors.invalid?(:employer_phone_suffix)) ? 'error' : '' %>">
+		  <%= f.hidden_field :employer_phone, :value => @customer.employer_phone %>
+		  <%= f.label :employer_phone_area_code, "Employer Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :employer_phone_area_code, :size => 3,:value => @customer.employer_phone[0..2], :maxlength => 3 %> -
+          <%= f.text_field :employer_phone_prefix, :size => 3,:value => @customer.employer_phone[-7..-5], :maxlength => 3 %> -
+          <%= f.text_field :employer_phone_suffix, :size => 4,:value => @customer.employer_phone[-4..-1], :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:next_pay_date_2) ? 'error' : '' %>">
+          <%= f.label :next_pay_date_2, "Second Pay Date<span class=\"required\">*</span>" %>
+          <%= f.text_field :next_pay_date_2, :size => 14 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field">
+          <div class="form_field <%= @customer.errors.invalid?(:months_employed) ? 'error' : '' %>">
+            <%= f.label :months_employed, "Duration of Employment<span class=\"required\">*</span>" %>
+            <%= f.select :months_employed, Customer::MONTHS_AT,{:value => @customer.months_employed}, :include_blank => true %>
+          </div>
+        </div>
+      </div>
+      <div class="form_right">
+      	<% 
+		if @customer.bank_accounts.first.bank_direct_deposit == false
+			@deposite_status=0
+		else
+			@deposite_status=1
+		end
+		%>
+		
+        <div class="form_field <%= @customer.errors.invalid?(:bank_direct_deposit) ? 'error' : '' %>">
+          <%= f.label :bank_direct_deposit, "Direct Deposit?<span class=\"required\">*</span>" %>
+          <%= f.select :bank_direct_deposit,[["Yes", 1], ["No", 0]],{ :value => @deposite_status },:include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+    </fieldset>
+
+    <fieldset>
+      <legend>References</legend>
+
+      <p class="instructions">Please provide 2 references. References must be friends or relatives that are not living with you. We will not contact your references to qualify you for your loan.</p>
+
+      <div class="form_left">
+      	<%@r_1_name=@customer.reference_1_name.split(' ')%>
+		<%@r_2_name=@customer.reference_2_name.split(' ')%>
+        <div class="form_field <%= @customer.errors.invalid?(:ref1_first_name) ? 'error' : '' %>">
+          <%= f.label :reference_1_first_name, "First Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :ref1_first_name,:value => @r_1_name[0], :size => 12 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:ref1_last_name) ? 'error' : '' %>">
+          <%= f.label :reference_1_last_name, "Last Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :ref1_last_name,:value => @r_1_name[1], :size => 16 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:ref2_first_name) ? 'error' : '' %>">
+          <%= f.label :ref2_first_name, "First Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :ref2_first_name,:value => @r_2_name[0], :size => 12 %>
+        </div>
+        <div class="form_field <%= @customer.errors.invalid?(:ref2_last_name) ? 'error' : '' %>">
+          <%= f.label :ref2_last_name, "Last Name<span class=\"required\">*</span>" %>
+          <%= f.text_field :ref2_last_name,:value => @r_2_name[1], :size => 16 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= (@customer.errors.invalid?(:ref1_phone_area_code) || @customer.errors.invalid?(:ref1_phone_prefix) || @customer.errors.invalid?(:ref1_phone_suffix)) ? 'error' : '' %>">
+          <%= f.hidden_field :reference_1_phone, :value => @customer.reference_1_phone %>
+		  <%= f.label :ref1_phone, "Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :ref1_phone_area_code, :size => 3,:value => @customer.reference_1_phone[0..2], :maxlength => 3 %> -
+          <%= f.text_field :ref1_phone_prefix, :size => 3,:value => @customer.reference_1_phone[-7..-5], :maxlength => 3 %> -
+          <%= f.text_field :ref1_phone_suffix, :size => 4, :value => @customer.reference_1_phone[-4..-1],:maxlength => 4 %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= (@customer.errors.invalid?(:ref2_phone_area_code) || @customer.errors.invalid?(:ref2_phone_prefix) || @customer.errors.invalid?(:ref2_phone_suffix)) ? 'error' : '' %>">
+		<%= f.hidden_field :reference_2_phone, :value => @customer.reference_2_phone %>
+          <%= f.label :ref2_phone, "Phone<span class=\"required\">*</span>" %>
+          <%= f.text_field :ref2_phone_area_code, :size => 3,:value => @customer.reference_2_phone[0..2], :maxlength => 3 %> -
+          <%= f.text_field :ref2_phone_prefix, :size => 3,:value => @customer.reference_2_phone[-7..-5], :maxlength => 3 %> -
+          <%= f.text_field :ref2_phone_suffix, :size => 4,:value => @customer.reference_2_phone[-4..-1], :maxlength => 4 %>
+        </div>
+      </div>
+      <div class="clear"></div>
+
+      <div class="form_left">
+        <div class="form_field <%= @customer.errors.invalid?(:reference_1_relationship) ? 'error' : '' %>">
+          <%= f.label :reference_1_relationship, "Relationship<span class=\"required\">*</span>" %>
+          <%= f.select :reference_1_relationship,Customer::RELATIONSHIPS,{:value => @customer.reference_1_relationship},:include_blank => true %>
+        </div>
+      </div>
+      <div class="form_right">
+        <div class="form_field <%= @customer.errors.invalid?(:reference_2_relationship) ? 'error' : '' %>">
+          <%= f.label :reference_2_relationship, "Relationship<span class=\"required\">*</span>" %>
+          <%= f.select :reference_2_relationship,Customer::RELATIONSHIPS,{:value => @customer.reference_2_relationship},:include_blank => true %>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </fieldset>
+
+    <div class="box" style="width: 740px;">
+      <table>
+        <tr>
+          <td align="left" valign="top" width="25">
+            <%= f.check_box :military %>
+          </td>
+          <td align="left" valign="top">
+            Please check if you are an active duty member of the U.S military or if you are a spouse or dependent of an active duty member of the U.S. military.
+          </td>
+        </tr>
+        <tr>
+          <td align="left" valign="top" width="25">
+            <%= f.check_box :us_citizen %>
+            <!-- <input type="checkbox" id="us_citizen" checked="checked" value="1"/> -->
+          </td>
+          <td align="left" valign="top">
+            Please check if you are currently a US Citizen.
+          </td>
+        </tr>
+        <tr>
+          <td align="left" valign="top" width="25">
+            <input type="checkbox" id="i_agree" checked="checked" value="Y"/>
+          </td>
+          <td align="left" valign="top">
+            I agree to the <%#= link_to "Privacy Policy", privacy_path, :target => "_blank" %>.
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div align="center" style="padding: 15px 0px 15px 0px;">
+      <div id="submit_button">
+        <input type="image" src="/images/submit_application.png" border="0" alt="Submit Application" onclick="$('#submit_button').hide(); $('#loading_box').show();" />
+      </div>
+      <div id="loading_box" style="display: none;">
+        <h3>Please do not press refresh. This may take up to 5 minutes.</h3>
+          <%= image_tag("loading.gif") %>
+      </div>
+    </div>
+  <% end %>
+</div>
+<div class="clear"></div>
+

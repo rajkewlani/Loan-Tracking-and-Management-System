@@ -1,0 +1,67 @@
+<% title("Lead Filters") %>
+<% subtitle("These are the submission filters applied to lead providers.")%>
+
+<div class="content-box"><!-- Start Content Box -->
+
+	<div class="content-box-header">
+
+		<ul class="content-box-tabs">
+			<li><a href="#tab1" class="default-tab">List</a></li> <!-- href must be unique and match the id of target div -->
+			<li><a href="#tab2">Create</a></li>
+		</ul>
+
+		<div class="clear"></div>
+
+	</div> <!-- End .content-box-header -->
+
+  <div class="content-box-content">
+    
+    <%= display_flash(flash) %>
+  	
+  	<div class="tab-content default-tab" id="tab1">
+
+  	  <table>
+
+    		<thead>
+    			<tr>
+    			   <th>Name</th>
+    			   <th># Lead Providers</th>
+    			   <th>&nbsp;</th>
+    			</tr>
+
+    		</thead>
+
+    		<tfoot>
+    			<tr>
+    				<td colspan="3">
+    					<%= will_paginate @lead_filters %>
+    					<div class="clear"></div>
+    				</td>
+    			</tr>
+    		</tfoot>
+
+    		<tbody>
+    		  <% @lead_filters.each do |lead_filter| %>
+    				<tr>
+    					<td><%= link_to lead_filter.name, edit_lead_filter_path(lead_filter) %></td>
+    					<td><%= lead_filter.lead_providers.count %></td>
+    					<td class="icons">
+    					  <%= link_to image_tag("icons/pencil.png", :alt => "Edit"), edit_lead_filter_path(lead_filter) %>
+    					  <%= link_to image_tag("icons/cross.png", :alt => "Delete"), lead_filter_path(lead_filter), :method => :delete, :confirm => "Are you sure?" %>
+    					</td>
+    				</tr>
+    			<% end %>
+    		</tbody>
+
+    	</table>
+  	</div>
+  	
+    <div class="tab-content" id="tab2">
+      <% form_for LeadFilter.new do |f| %>
+        <%= render :partial => "form", :locals => { :f => f } %>
+      <% end %>
+    </div>
+
+  </div>
+  
+</div>

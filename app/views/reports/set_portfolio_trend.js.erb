@@ -1,0 +1,25 @@
+<% if params[:t] == '1' %>
+  $("#daily_portfolio_trend").html("<%= escape_javascript(render(:partial => 'daily_portfolio_trend', :locals => {:daily_data => @daily_data, :trend_avg => @trend_avg})) %>");
+  $("#weekly_portfolio_trend").hide();
+  $("#monthly_portfolio_trend").hide();
+  $("#yearly_portfolio_trend").hide();
+  $("#daily_portfolio_trend").show();
+<% elsif params[:t] == '2' %>
+  $("#weekly_portfolio_trend").html("<%= escape_javascript(render(:partial => 'weekly_portfolio_trend', :locals => {:sum_weekly_data => @sum_weekly_data, :trend_avg => @trend_avg})) %>");
+  $("#daily_portfolio_trend").hide();
+  $("#monthly_portfolio_trend").hide();
+  $("#yearly_portfolio_trend").hide();
+  $("#weekly_portfolio_trend").show();
+<% elsif params[:t] == '3' %>
+  $("#monthly_portfolio_trend").html("<%= escape_javascript(render(:partial => 'monthly_portfolio_trend', :locals => {:sum_monthly_data => @sum_monthly_data, :trend_avg => @trend_avg})) %>");
+  $("#daily_portfolio_trend").hide();
+  $("#weekly_portfolio_trend").hide();
+  $("#yearly_portfolio_trend").hide();
+  $("#monthly_portfolio_trend").show();
+<% elsif params[:t] == '4' %>
+  $("#yearly_portfolio_trend").html("<%= escape_javascript(render(:partial => 'yearly_portfolio_trend', :locals => {:sum_yearly_data => @sum_yearly_data, :trend_avg => @trend_avg})) %>");
+  $("#daily_portfolio_trend").hide();
+  $("#monthly_portfolio_trend").hide();
+  $("#weekly_portfolio_trend").hide();
+  $("#yearly_portfolio_trend").show();
+<% end %>

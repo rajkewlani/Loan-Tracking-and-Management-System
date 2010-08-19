@@ -1,0 +1,17 @@
+<%= error_messages_for :location %>
+<fieldset class="column-left">
+  <p>
+    <%= f.label :name, "Name" %>
+  	<%= f.text_field :name, :class => "text-input medium-input" %>
+  </p>
+  <p>
+    <%= f.label :ip_address, "IP Address" %>
+  	<%= f.text_field :ip_address, :class => "text-input medium-input" %>
+  </p>
+  <p>
+  	<input class="button" type="submit" value="Save Changes" />
+  	or <%= link_to "Cancel", users_path %>
+  </p>
+</fieldset>
+
+<div class="clear"></div><!-- End .clear -->

@@ -1,0 +1,25 @@
+<% title "Login" %>
+<% form_tag investor_sessions_path do %>
+  <%= display_flash(flash) %>
+  <p>
+    <%= label_tag :login, "Username", :style => "line-height: 32px;" %>
+    <%= text_field_tag :login, @login, :class => "text-input" %>
+  </p>
+  <div class="clear"></div>
+  <p>
+    <%= label_tag :password, "Password", :style => "line-height: 32px;" %>
+    <%= password_field_tag :password, "", :class => "text-input" %>
+  </p>
+  <div class="clear"></div>
+  <p id="remember-password">
+    <%= check_box_tag :remember_me -%> Remember me
+  </p>
+  <div class="clear"></div>
+  <p>
+          <input class="button" type="submit" value="Sign In" />
+  </p>
+  <div class="clear"></div>
+  <p style="text-align: center; color: #666;">
+    Your IP address is <%= request.remote_ip %>
+  </p>
+<% end %>

@@ -1,0 +1,48 @@
+<table>
+
+	<thead>
+		<tr>
+		   <th>Date</th>
+		   <th>Time</th>
+		   <th>Name</th>
+		   <th>SSN</th>
+ 		   <th>Status</th>
+		   <th>Reason</th>
+		   <th>&nbsp;</th>
+		</tr>
+
+	</thead>
+
+	<tfoot>
+		<tr>
+			<td colspan="7" style="text-align: center;">
+				<%= will_paginate @customers, :inner_window => 1, :style => "text-align: center;" %><br/>
+        <%= page_entries_info @customers %>
+				<div class="clear"></div>
+			</td>
+		</tr>
+	</tfoot>
+
+	<tbody>
+	  <% @customers.each do |customer| %>
+			<tr>
+			  <td><%= customer.created_at.strftime("%m/%d/%Y") %></td>
+			  <td><%= customer.created_at.strftime("%I:%M:%S %p") %></td>
+				<td><%= link_to customer.full_name, loan_path(customer.loans.first) %></td>
+				<td><%= customer.ssn.using('xxx-xx-####') %></td>
+				<% if customer.accepted? %>
+				  <td><%= link_to customer.aasm_state.split("_").join(" ").titleize, loan_path(customer.loans.first) %></td>
+  				<td>&nbsp;</td>
+				<% else %>
+				  <td><%= customer.aasm_state.capitalize %></td>
+  				<td><%#= customer.reject_reason %></td>
+				<% end %>
+				<td nowrap class="icons">
+					<%= link_to image_tag("icons/pencil.png", :alt => "Edit", :border => 0), edit_customer_path(customer) %>
+					<%= link_to image_tag("icons/cross.png", :alt => "Delete", :border => 0), loan_path(customer.loans.first), :method => :delete, :confirm => "Are you sure?" %>
+				</td>
+			</tr>
+		<% end %>
+	</tbody>
+
+</table>

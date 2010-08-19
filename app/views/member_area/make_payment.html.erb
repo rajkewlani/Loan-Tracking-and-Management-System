@@ -1,0 +1,313 @@
+<% content_for :head do %>
+<%= stylesheet_link_tag "south-street/jquery-ui-1.7.2.custom", :media => "screen" %>
+<%= javascript("jquery-ui-1.7.2.custom.min.js") %>
+<%= javascript_include_tag 'jquery.inplace.pack','jquery.livequery' %>
+
+<script type="text/javascript">
+  function setAccountFields() {
+    if ($('#scheduled_payment_bank_account_id').val() == '') {
+      // Add New Bank Account
+      $('#bank_account_info').show();
+    } else {
+      // Existing Account
+      $('#bank_account_info').hide();
+    }
+    if ($('#scheduled_payment_credit_card_id').val() == '') {
+      // Add New Credit Card
+      $('#credit_card_info').show();
+    } else {
+      // Existing Account
+      $('#credit_card_info').hide();
+    }
+
+
+    method = $("input[name='payment_method']:checked").val();
+    if (method == 'bank_account') {
+      $('#bank_account').show();
+      $('#credit_card').hide();
+      payment_id = $('#scheduled_payment_bank_account_id').val();
+      $('#scheduled_payment_payment_account_id').attr('value',payment_id)
+    } else {
+      $('#bank_account').hide();
+      $('#credit_card').show();
+      payment_id = $('#scheduled_payment_credit_card_id').val();
+      $('#scheduled_payment_payment_account_id').attr('value',payment_id)
+    }
+  }
+
+  // Globals
+  var edit_amount_shown = false;
+  var amount_value_before_edit = null;
+
+  function KeyCheck(e)
+  {
+    var KeyID = (window.event) ? event.keyCode : e.keyCode;
+    switch(KeyID) {
+      case 27:
+        if (edit_amount_shown) {
+          $('#amount_span').html(amount_value_before_edit);
+          $('#pencil').show();
+          edit_amount_shown = false;
+        }
+        break;
+    }
+  }
+
+  $(document).ready(function() {
+    $("input[name='payment_method']")[0].checked = true;
+    $("#scheduled_payment_draft_date").datepicker({
+		    minDate: '+0D',
+		    //maxDate: '+3M',
+                    //maxDate: '+<%#= @loan.due_date - Date.today - 1 -%>D',
+                    maxDate: new Date(<%= @max_date.year -%> ,<%= @max_date.month-1 -%> ,<%= @max_date.day -%> ),
+		    beforeShowDay: noWeekendsOrHolidays });
+    setAccountFields();
+    $("input[name='payment_method']").click(function() {
+      setAccountFields();
+    });
+    
+    $("#scheduled_payment_bank_account_id").change(function() {
+      if ($(this).val() == '') {
+        // Add New Account
+        $('#bank_account_info').show();
+        $('#scheduled_payment_payment_account_id').attr('value','')
+      } else {
+        // Existing Account
+        $('#bank_account_info').hide();
+        payment_id = $(this).val();
+        $('#scheduled_payment_payment_account_id').attr('value',payment_id)
+      }
+    });
+    $("#scheduled_payment_credit_card_id").change(function() {
+      if ($(this).val() == '') {
+        // Add New Account
+        $('#credit_card_info').show();
+        $('#scheduled_payment_payment_account_id').attr('value','')
+      } else {
+        // Existing Account
+        $('#credit_card_info').hide();
+        payment_id = $(this).val();
+        $('#scheduled_payment_payment_account_id').attr('value',payment_id)
+      }
+    });
+
+    $('#scheduled_payment_draft_date').change(function() {
+      $.get('/member_area/loan_interest_on_date/'+$('#scheduled_payment_loan_id').val(),'date='+$('#scheduled_payment_draft_date').val(),function(formatted_interest) {
+        $('#interest').html('$'+formatted_interest);
+        principal = parseFloat($('#principal').html().substr(1,10));
+        interest = parseFloat(formatted_interest);
+        fees = parseFloat($('#fees').html().substr(1,10));
+        total = principal + interest + fees;
+        $('#payoff_total').html('$'+total.toFixed(2));
+      });
+    });
+
+    //
+    // Edit Payment Amount
+    //
+    var loan_id = <%= @loan.id -%>;
+    $('#amount_cell').click(function() {
+      if (!edit_amount_shown) {
+        amount = $('#amount_span').html().substr(1,10);
+        amount_value_before_edit = $('#amount_span').html();
+        $.get('/member_area/edit_new_scheduled_payment_amount_form/'+loan_id,'amount='+amount,function(html) {
+          $('#pencil').hide();
+          $('#amount_span').html(html);
+          $('#amount_field').focus().select();
+        });
+        edit_amount_shown = true;
+      }
+      return false;
+    });
+
+    $('#edit_amount_form').livequery('submit',function(event) {
+      id = $('#id').val();
+      amount = $('#amount_field').val();
+      date = $('#scheduled_payment_draft_date').val();
+      $.post('/member_area/allocate_hypothetical_loan_payment/'+id,'amount='+amount+'&date='+date,function(amounts) {
+        amount_array = amounts.split(',');
+        total = amount_array[0];
+        principal = amount_array[1];
+        interest  = amount_array[2];
+        fees      = amount_array[3];
+        $('#principal').html(principal);
+        $('#interest').html(interest);
+        $('#fees').html(fees);
+        $('#payoff_total').html(total);
+        $('#scheduled_payment_amount').attr('value',total.substr(1,10));
+        $('#amount_span').html(total);
+        $('#pencil').show();
+        edit_amount_shown = false;
+      });
+      return false;
+    });
+
+    document.onkeyup = KeyCheck;
+    
+  });
+
+  natDays = [
+    [10, 12, 2009],
+    [11, 11, 2009],
+    [11, 29, 2009],
+    [12, 25, 2009],
+    [1 , 01, 2010],
+    [1 , 18, 2010],
+    [2 , 15, 2010],
+    [5 , 31, 2010],
+    [7 , 04, 2010],
+    [7 , 05, 2010],
+    [9 , 6, 2010],
+    [10, 11, 2010],
+    [11, 11, 2010],
+    [11, 25, 2010],
+    [12, 24, 2010],
+    [12, 25, 2010]
+  ];
+  function nationalDays(date) {
+    for (i = 0; i < natDays.length; i++) {
+      if (date.getMonth() == natDays[i][0] - 1
+        && date.getDate() == natDays[i][1]
+        && date.getFullYear() == natDays[i][2]) {
+          return [false, 'a'];
+      }
+    }
+    return [true, ''];
+  }
+  function noWeekendsOrHolidays(date) {
+    var noWeekend = $.datepicker.noWeekends(date);
+    if (noWeekend[0]) {
+      return nationalDays(date);
+    } else {
+      return noWeekend;
+    }
+  }
+</script>
+<script type="text/javascript">
+
+ $(document).ready(function() {
+  });
+</script>
+<% end %>
+
+
+<h2>Make A Payment</h2>
+<div style="margin-left:20px">
+<%= error_messages_for :scheduled_payment %>
+</div>
+<% form_for :scheduled_payment do |f| %>
+<%= f.hidden_field :loan_id, :value => @loan.id %>
+<%= f.hidden_field :payment_account_id %>
+<%= f.hidden_field :amount %>
+<fieldset id="make_payment">
+	<legend>Date &amp; Amount</legend>
+        <table style="padding-left:10px">
+          <tr>
+            <td style="width:140px">Principal</td>
+            <td id="principal" style="text-align:right;"><%= number_to_currency(@loan.principal_owed, :precision => 2) %></td>
+            <td nowrap style="padding-left:30px">Payment Date</td>
+            <td style="padding-left:10px"><%= f.text_field :draft_date, :value => @scheduled_payment.draft_date.to_s(:mmddyyyy), :size => 12 %></td>
+          </tr>
+          <tr>
+            <td style="width:140px">Interest</td>
+            <td id="interest" style="text-align:right;"><%= number_to_currency(@loan.interest_owed) %></td>
+            <td nowrap style="padding-left:30px">Payment Amount</td>
+            <td id="amount_cell" style="padding-left:10px">
+              <span id="amount_span"><%= number_to_currency(@scheduled_payment.amount) %></span>
+              <a id="pencil" href="#" title="Edit Payment Amount"><img src="/images/icons/pencil.png" style="margin-left:10px"/></a>
+            </td>
+          </tr>
+              <%#= f.text_field :amount, :value => number_with_precision(@loan.total_owed, :precision => 2),:class => "text-input medium-input", :size => 6 %>
+              <%#= in_place_editor_field :scheduled_payment, :formatted_amount %>
+          <tr>
+            <td style="width:140px">Fees</td>
+            <td id="fees" style="text-align:right;border-bottom:5px double #aaa"><%= number_to_currency(@loan.fees_owed) %></td>
+            <td style="padding-left:30px"></td>
+            <td rowspan="2" style="padding-left:10px">
+              Payment amount is applied first to fees, interest, and then principal.  If you wish to make
+              a payment towards principal only, please call us at <span style="color:black;font-weight:bold">(866) 569-3321.</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="width:140px;vertical-align:top">Pay Off Total</td>
+            <td id="payoff_total" style="text-align:right;;vertical-align:top;"><%= number_to_currency(@loan.total_owed) %></td>
+            <td style="padding-left:30px"></td>
+          </tr>
+        </table>
+</fieldset>
+<fieldset id="payment_method">
+  <legend>Payment Method</legend>
+  <p>
+    <input type="radio" name="payment_method" value="bank_account"/> Bank Account
+  </p>
+  <p>
+    <input type="radio" name="payment_method" value="credit_card"/> Credit Card
+  </p>
+</fieldset>
+<fieldset id="bank_account">
+  <legend>Bank Account Information</legend>
+  <p>
+     <%= f.label :bank_account_id, 'Bank Account' %>
+     <%= f.select :bank_account_id, current_customer.payment_accounts.bank_accounts.map {|pa|[pa.account.description, pa.id]} << ['Add New Bank Account',''] %>
+  </p>
+  <div id="bank_account_info">
+    <p>
+            <%= f.label :bank_name, "Bank Name", :style => 'width:180px' %>
+            <%= f.text_field :bank_name, :class => "text-input medium-input", :maxlength => 30 %>
+    </p>
+    <p>
+            <%= f.label :bank_account_number, "Bank Account Number", :style => 'width:180px' %>
+            <%= f.text_field :bank_account_number, :class => "text-input medium-input", :maxlength => 20 %>
+    </p>
+    <p>
+            <%= f.label :bank_aba_number, "Bank Routing Number", :style => 'width:180px' %>
+            <%= f.text_field :bank_aba_number, :class => "text-input medium-input", :maxlength => 9 %>
+    </p>
+    <p>
+            <%= f.label :bank_account_type, "Bank Account Type", :style => 'width:180px' %>
+            <%= f.select :bank_account_type, [['Checking','CHECKING'], ['Savings','SAVINGS']], {:include_blank => true} %>
+    </p>
+  </div>
+</fieldset>
+<fieldset id="credit_card" style="display:none">
+  <legend>Credit Card Information</legend>
+  <p>
+     <%= f.label :credit_card_id, 'Credit Card' %>
+     <%= f.select :credit_card_id, current_customer.payment_accounts.credit_cards.collect {|pa|[pa.account.description, pa.id]} << ['Add New Credit Card',''] %>
+  </p>
+  <div id="credit_card_info">
+    <p>
+      <%= f.label :card_number %>
+      <%= f.text_field :card_number, :size => 16, :maxlength => 16 %>
+    </p>
+    <p>
+      <%= f.label :expires %>
+      <%#= f.text_field :expires, :maxlength => 5 %>
+      <%= f.select :expires_month, [['Jan',1],['Feb',2],['Mar',3],['Apr',4],['May',5],['Jun',6],['Jul',7],['Aug',8],['Sep',9],['Oct',10],['Nov',11],['Dec',12]] %>
+      <%= f.select :expires_year, [2010,2011,2012,2013,2014,2015,2016] %>
+    </p>
+    <p>
+      <%= f.label :cvv, '3 Digit Security Code' %>
+      <%= f.text_field :cvv, :maxlength => 3 %>
+    </p>
+    <p>
+      <%= f.label :name_on_card %>
+      First <%= f.text_field :first_name, :maxlength => 20 %> Last <%= f.text_field :last_name, :maxlength => 20 %>
+    </p>
+    <p>
+      <%= f.label :card_billing_address %>
+      <%= f.text_field :card_billing_address, :maxlength => 50 %>
+    </p>
+    <p>
+      <%= f.label :card_billing_zip %>
+      <%= f.text_field :card_billing_zip, :maxlength => 10 %>
+    </p>
+  </div>
+</fieldset>
+<div style="text-align:center;margin-bottom:40px">
+<%= submit_tag 'Submit Payment' %>
+</div>
+<%end%>
+<p>
+  <%= link_to('View Scheduled Payments', member_area_scheduled_payments_path) %>
+</p>

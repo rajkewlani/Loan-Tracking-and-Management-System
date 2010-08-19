@@ -1,0 +1,249 @@
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#trend').change(function() {
+      trend = $(this).val();
+      portfolio = $('#portfolio_id').val();
+      $.post("/set_portfolio_trend/"+portfolio,"t="+trend,null,"script");
+    });
+    $('#portfolio_id').change(function() {
+      trend = $('#trend').val();
+      portfolio = $(this).val();
+      $.post("/set_portfolio_trend/"+portfolio,"t="+trend,null,"script");
+    });
+  });
+
+</script>
+<% title(current_user.full_name) %>
+<div id="report_duration" style="height: 50px;">
+  <div style="color:green;font-size:18px;font-weight:bold;">
+    <%= current_user.role.upcase -%>
+  </div>
+</div>
+
+<%#*<div id="portfolio_menu" style="border: 2px solid #DDDDDD; float: right; width: 100px; height: 100px; z-index: 100; border-color: #DDDDDD; background: transparent url(images/bg-radial-gradient.gif) repeat top right; display: none; position: absolute; top: 118px; right: 30px;">%>
+  <%#*<div class="content-box-content" style="float:right; padding: 5px;">%>
+    <%#*<div style="padding-bottom: 5px; ">%>
+      <%#*<p align="right" style="padding: 0px;">%>
+        <%#*<label id="daily" onclick="select_opt(this.id)">%>
+          <%#= "DAILY" %>
+        <%#*</label>%>
+      <%#*</p>%>
+      <%#*<p align="right" style="padding: 0px;">%>
+        <%#*<label id="weekly" onclick="select_opt(this.id)">%>
+          <%#= "WEEKLY" %>
+        <%#*</label>%>
+      <%#*</p>%>
+      <%#*<p align="right" style="padding: 0px;">%>
+        <%#*<label id="monthly" onclick="select_opt(this.id)">%>
+          <%#= "MONTHLY" %>
+        <%#*</label>%>
+      <%#*</p>%>
+      <%#*<p align="right" style="padding: 0px;">%>
+        <%#*<label id="yearly" onclick="select_opt(this.id)">%>
+          <%#= "YEARLY" %>
+        <%#*</label>%>
+      <%#*</p>%>
+    <%#*</div>%>
+  <%#*</div>%>
+<%#*</div>%>
+
+
+<div class="content-box" style="min-width: 650px;">
+  <div class="content-box-header" style="text-align:center;">
+    <ul class="content-box-tabs" style="float:none;"">
+	  <li style="width:300px;">&nbsp;</li>
+      <li ><a  href="#loans" class="<%= default_tab_class('loans') -%> current" rel="loans">Loans</a></li>
+      <li ><a  href="#aging" class="<%= default_tab_class('aging') -%>" rel="aging">Aging</a></li>
+      <li ><a  href="#default" class="<%= default_tab_class('default') -%>" rel="default">Default</a></li>
+      <li ><a  href="#collections" class="<%= default_tab_class('collections') -%>" rel="collections">Collections</a></li>
+    </ul>
+    <div class="clear"></div>
+  </div>
+</div>
+
+<div  style="min-width: 650px;">
+  <div class="content-box-content">
+    <%= display_flash(flash) %>
+    <div class="tab-content <%= default_tab_class('loans') -%>" id="loans">
+      <% if !@portfolio.nil?%>
+	<table>
+          <tr>
+            <td style="float: left">
+              <%= select "portfolio", "id", @portfolio_all.collect{|p|[p.name, p.id]}%>
+            </td>
+          
+            <% @trends = [['DAILY','1'],['WEEKLY','2'],['MONTHLY','3'],['YEARLY','4']] %>
+            <td style="float: right">
+              <%= select_tag "trend", options_for_select(@trends) %>
+            </td>
+            <td style="float: right;">
+              <%= link_to image_tag("/images/export_to_csv.png", :size => "16x16", :border => 0), export_to_csv_url,:title=>'export to csv' %>
+              <%= link_to image_tag("/images/export_to_excel.png", :size => "16x16", :border => 0), export_to_excel_url,:title=>"export to excel" %>
+              <%= link_to image_tag("/images/export_to_pdf.png", :size => "16x16", :border => 0), export_to_pdf_url,:title=>"export to pdf" %>
+            </td>
+          </tr>
+        </table>
+      <%end%>
+      <% if @portfolio.nil? %>
+	No Portfolio Report to show for this user
+      <% else %>
+        <table id="today_trend">
+          <thead>
+            <tr>
+              <th colspan="8" style="font-size: 18px;">Today</th>
+            </tr>
+          </thead>
+          <thead>
+            <tr>
+              <th>Portfolio</th>
+              <th>&nbsp;</th>
+              <th>New Loans</th>
+              <th>Reloans</th>
+              <th>RL %</th>
+              <th>Total</th>
+              <th>Total LTD</th>
+              <th>Loans Out</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>All</th>
+              <th></th>
+              <th><%= @new_loan_today %></th>
+              <th><%= @re_loan_today %></th>
+              <th><%= @perc_re_loan_today %> %</th>
+              <th><%= @total_today%></th>
+              <th><%= @total_LTD_today %></th>
+              <th><%= @loan_out_today %></th>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr><td colspan="8"></td></tr>
+          </thead>
+        </table>
+
+        <div id="daily_portfolio_trend">
+          <%= render :partail => 'daily_portfolio_trend', :locals => {:daily_data => @daily_data, :trend_avg => @trend_avg} %>
+        </div>
+
+        <div  id="weekly_portfolio_trend" style="display: none;">
+          <%= render :partail => 'weekly_portfolio_trend', :locals => {:sum_weekly_data => @sum_weekly_data, :trend_avg => @trend_avg} %>
+        </div>
+
+        <div id="monthly_portfolio_trend" style="display: none;">
+          <%= render :partail => 'monthly_portfolio_trend', :locals => {:sum_monthly_data => @sum_monthly_data, :trend_avg => @trend_avg} %>
+        </div>
+
+        <div id="yearly_portfolio_trend" style="display: none;">
+          <%= render :partail => 'yearly_portfolio_trend', :locals => {:sum_yearly_data => @sum_yearly_data, :trend_avg => @trend_avg} %>
+        </div>
+      </div>
+    <% end %>
+    <div class="tab-content <%= default_tab_class('aging') -%>" id="aging" style="display:none">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">Paid as Agreed</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Portfolio</th>
+            <th>Per. 1</th>
+            <th>Per. 2</th>
+            <th>Per. 3</th>
+            <th>Per. 4</th>
+            <th>Per. 5</th>
+            <th>Per. 6</th>
+            <th>Per. 7</th>
+            <th>Per. 8+</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>All</th>
+            <th>11.1%</th>
+            <th>14.0%</th>
+            <th>14.0%</th>
+            <th>16.3%</th>
+            <th>12.7%</th>
+            <th>11.0%</th>
+            <th>8.6%</th>
+            <th>9.5%</th>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <thead>
+          <tr><td colspan="8"></td></tr>
+        </thead>
+      </table>
+      <table>
+        <thead>
+          <tr>
+            <th colspan="8" style="font-size: 18px;">Past Due</th>
+          </tr>
+        </thead>
+      </table>
+      <table>
+        <thead>
+          <tr>
+            <th>Portfolio</th>
+            <th>7 Days</th>
+            <th>14 Days</th>
+            <th>30 Days</th>
+            <th>60 Days</th>
+            <th>90 Days</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>All</th>
+            <th>900</th>
+            <th>640</th>
+            <th>250</th>
+            <th>108</th>
+            <th>4</th>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <thead>
+          <tr><td colspan="8"></td></tr>
+        </thead>
+      </table>
+      <table>
+        <thead>
+          <tr>
+            <th colspan="8" style="font-size: 18px;">Status</th>
+          </tr>
+        </thead>
+      </table>
+      <table>
+        <thead>
+          <tr>
+            <th>Portfolio</th>
+            <th>Active</th>
+            <th>Collections</th>
+            <th>Garnishment</th>
+            <th>Court Order</th>
+            <th>Default</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>ALL</th>
+            <th>900</th>
+            <th>640</th>
+            <th>250</th>
+            <th>108</th>
+            <th>4</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

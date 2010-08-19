@@ -1,0 +1,82 @@
+<%= stylesheet("ui.daterangepicker.css") %>
+<%= javascript("jquery-ui-1.7.1.custom.min.js") %>
+<%= javascript("daterangepicker.jQuery.js") %>
+<script type="text/javascript">
+
+  $(function(){
+    $('#daterange_admin').daterangepicker({arrows:true});
+  });
+
+  $(document).ready(function()
+  {
+    $('#go_chart').click(function() {
+      daterange_admin = $('#daterange_admin').val();
+      portfolio_id = $('#portfolio_id').val();
+      if (daterange_admin == "")
+      {
+        alert('please select Date');
+        return false;
+      }
+      else if(portfolio_id == "")
+      {
+        $.post("/chart_asper_selectdate","selectdate="+$('#daterange_admin').val(),null,"script");
+      }
+
+      else
+      {
+        $.post("/chart_asper_selectdate/"+portfolio_id,"selectdate="+$('#daterange_admin').val(),null,"script");
+      }
+    });
+  });
+  
+</script>
+<% title("Welcome  "+   current_user.first_name) %>
+<%# title("Welcome Bob") %>
+<div style="height: 20px;"></div>
+<div id="export_icons">
+  <%= link_to image_tag("/images/export_to_csv.png", :size => "16x16", :border => 0), export_performance_csv_path,:title=>'export to csv' %>
+  <%= link_to image_tag("/images/export_to_excel.png", :size => "16x16", :border => 0), export_performance_data_to_excel_path,:title=>"export to excel" %>
+  <%= link_to image_tag("/images/export_to_pdf.png", :size => "16x16", :border => 0), export_performance_data_to_pdf_path,:title=>"export to pdf" %>
+
+  <span style="margin-left: 100px;"><%= check_box_tag 'fle', 'yes', false %> FLE</span>
+  <span style="margin-left: 30px;"><%= select "portfolio", "id", Portfolio.find(:all).collect{|p|[p.name, p.id]}, {:include_blank => 'All Portfolios'}%></span>
+  <span style="float:right; width: 240px;height: 25px; margin-right: 350px;">
+    <span style="float: left;">
+      <input type="text" name="daterange_admin" id="daterange_admin" readonly="true" onkeydown="return blockEnter(event);"/>
+    </span>
+    <span style="float: left;padding-left: 5px;"><%= link_to_function(image_tag("/images/gobutton.gif", :size => "19x19", :border => 0,:id=>"go_chart")) %></span>
+  </span>
+
+</div>
+<div style="height: 10px;"></div>
+<div class="content-box">
+  <!-- Start Content Box -->
+
+
+
+  <div class="content-box-header" style="height: 20px;"></div>
+
+  <div class="content-box-content">
+
+
+
+    <%= display_flash(flash) %>
+
+    <%= render :partial => "admin_dashboard_content",:locals=>{:charts_url=>chart_url} %>
+
+    <table>
+
+      <tfoot>
+        <tr>
+          <td colspan="3">
+<%#= will_paginate @loans %>
+            <div class="clear"></div>
+          </td>
+        </tr>
+      </tfoot>
+
+
+    </table>
+  </div>
+
+</div>

@@ -1,0 +1,536 @@
+<script type="text/javascript">
+  function ShowMenu(){
+  $('#report_menu').slideToggle();
+  }
+</script>
+
+<% title(current_user.full_name) %>
+<div id="report_duration" style="height: 50px;">
+  <div style="color:green;font-size:18px;font-weight:bold;">
+    <%= current_user.role.upcase -%>
+  </div>
+  <div style="float:right">
+    <input type="text" size="25" value="MAR 1, 2010 - APR 1, 2010" onclick='ShowMenu()' />
+  </div>
+</div>
+
+<div id="report_menu" style="border: 2px solid #DDDDDD; float: right; width: 100px; height: 180px; z-index: 100; border-color: #DDDDDD; background: transparent url(images/bg-radial-gradient.gif) repeat top right; display: none; position: absolute; top: 118px; right: 30px;">
+    <div class="content-box-content" style="float:right; padding: 5px;">
+      <div style="border-bottom: 1px solid #DDDDDD; padding-bottom: 5px; ">
+      	<p align="right" style="padding: 0px;"><%= "Today" %></p>
+      	<p align="right" style="padding: 0px;"><%= "Yesterday" %></p>
+      </div>
+      <div style="border-bottom: 1px solid #DDDDDD; padding-bottom: 5px; ">
+      	<p align="right" style="padding: 0px;"><%= "Last Week" %></p>
+      	<p align="right" style="padding: 0px;"><%= "Last 7 Days" %></p>
+      </div>
+      <div style="border-bottom: 1px solid #DDDDDD; padding-bottom: 5px; ">
+      	<p align="right" style="padding: 0px;"><%= "Last Month" %></p>
+      	<p align="right" style="padding: 0px;"><%= "Last 30 Days" %></p>
+      </div>
+      	<p align="right" style="padding: 0px;"><%= "Custom" %></p>
+    </div>
+</div>
+
+<div class="content-box" style="min-width: 650px;">
+  <div class="content-box-header" style="text-align:center;">
+    <ul class="content-box-tabs" style="float:none;"">
+	  <li style="width:300px;">&nbsp;</li>
+      <li ><a  href="#cost_per_loan" class="<%= default_tab_class('cost_per_loan') -%> current" rel="history">Cost per Loan</a></li>
+      <li ><a  href="#lead_cost" class="<%= default_tab_class('lead_cost') -%>" rel="history">Lead Cost</a></li>
+      <li ><a  href="#scoring" class="<%= default_tab_class('scoring') -%>" rel="history">Scoring</a></li>
+      <li ><a  href="#lead_providers" class="<%= default_tab_class('lead_providers') -%>" rel="history">Lead Providers</a></li>
+    </ul>
+    <div class="clear"></div>
+  </div>
+</div>
+
+<div  style="min-width: 650px;">
+  <div class="content-box-content">
+    <%= display_flash(flash) %>
+    <div class="tab-content <%= default_tab_class('cost_per_loan') -%>" id="cost_per_loan">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="11" style="font-size: 18px;">Summary</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Portfolio</th>
+            <th>&nbsp;</th>
+            <th>Leads</th>
+            <th>Conv.</th>
+            <th>Cost</th>
+            <th>Total</th>
+            <th>Sales</th>
+            <th>Scrub</th>
+            <th>CPA</th>
+            <th>Rel.</th>
+                    <th>CPL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>All</th>
+            <th>&nbsp;</th>
+            <th>650</th>
+            <th>35%</th>
+            <th>$25</th>
+            <th>$16,250</th>
+            <th>$320</th>
+            <th>$15.31</th>
+            <th>$76.56</th>
+            <th>56</th>
+                    <th>$60.05</th>
+          </tr>
+        </tbody>
+                  <thead>
+          <tr><td colspan="11"></td></tr>
+        </thead>
+        <thead>
+          <tr>
+            <th colspan="11" style="font-size: 18px;">Lead Providers</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Portfolio</th>
+            <th>&nbsp;</th>
+            <th>Leads</th>
+            <th>Conv.</th>
+            <th>Cost</th>
+            <th>Total</th>
+            <th>Sales</th>
+            <th>Scrub</th>
+            <th>CPA</th>
+            <th>Rel.</th>
+                    <th>CPL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Partner Weekly</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>650</th>
+            <th>35%</th>
+            <th>$25</th>
+            <th>$16,250</th>
+            <th>$320</th>
+            <th>$15.31</th>
+            <th>$76.56</th>
+            <th>56</th>
+                    <th>$60.05</th>
+          </tr>
+          <tr>
+            <th>T3 Leads</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th>650</th>
+            <th>35%</th>
+            <th>$25</th>
+            <th>$16,250</th>
+            <th>$320</th>
+            <th>$15.31</th>
+            <th>$76.56</th>
+            <th>56</th>
+                    <th>$60.05</th>
+          </tr>
+          <tr>
+            <th>Lead Flash</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>650</th>
+            <th>35%</th>
+            <th>$25</th>
+            <th>$16,250</th>
+            <th>$320</th>
+            <th>$15.31</th>
+            <th>$76.56</th>
+            <th>56</th>
+                    <th>$60.05</th>
+          </tr>
+          <tr>
+            <th>Lead Pile</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>650</th>
+            <th>35%</th>
+            <th>$25</th>
+            <th>$16,250</th>
+            <th>$320</th>
+            <th>$15.31</th>
+            <th>$76.56</th>
+            <th>56</th>
+                    <th>$60.05</th>
+          </tr>
+          <tr>
+            <th>Click Speed</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th>650</th>
+            <th>35%</th>
+            <th>$25</th>
+            <th>$16,250</th>
+            <th>$320</th>
+            <th>$15.31</th>
+            <th>$76.56</th>
+            <th>56</th>
+                    <th>$60.05</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-content <%= default_tab_class('lead_cost') -%>" id="lead_cost">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">Summary</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Portfolio</th>
+            <th>&nbsp;</th>
+            <th>Cost</th>
+            <th>Sent</th>
+            <th>Accept</th>
+            <th>%</th>
+            <th>Tot. Cost</th>
+            <th>Loans</th>
+            <th>Conv.</th>
+            <th>Cost/Loan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>All</th>
+            <th>&nbsp;</th>
+            <th>$25.00</th>
+            <th>12,435</th>
+            <th>450</th>
+            <th>32.1%</th>
+            <th>$11,250</th>
+            <th>167</th>
+            <th>36.8%</th>
+            <th>$60.05</th>
+          </tr>
+        </tbody>
+        <thead>
+          <tr><td colspan="10"></td></tr>
+        </thead>
+        <thead>
+          <tr>
+            <th colspan="10" style="font-size: 18px;">Lead Providers</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>&nbsp;</th>
+            <th>Cost</th>
+            <th>Sent</th>
+            <th>Accept</th>
+            <th>%</th>
+            <th>Tot. Cost</th>
+            <th>Loans</th>
+            <th>Conv.</th>
+            <th>Cost/Loan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Partner Weekly</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>$25.00</th>
+            <th>12,435</th>
+            <th>450</th>
+            <th>32.1%</th>
+            <th>$11,250</th>
+            <th>167</th>
+            <th>36.8%</th>
+            <th>$60.05</th>
+          </tr>
+          <tr>
+            <th>T3 Leads</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th>$20.00</th>
+            <th>8,435</th>
+            <th>340</th>
+            <th>25.1%</th>
+            <th>$680</th>
+            <th>116</th>
+            <th>34.1%</th>
+            <th>$57.65</th>
+          </tr>
+          <tr>
+            <th>Lead Flash</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>$25.00</th>
+            <th>12,435</th>
+            <th>450</th>
+            <th>32.1%</th>
+            <th>$11,250</th>
+            <th>167</th>
+            <th>36.8%</th>
+            <th>$60.05</th>
+          </tr>
+          <tr>
+            <th>Lead Pile</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>$25.00</th>
+            <th>12,435</th>
+            <th>450</th>
+            <th>32.1%</th>
+            <th>$11,250</th>
+            <th>167</th>
+            <th>36.8%</th>
+            <th>$60.05</th>
+          </tr>
+          <tr>
+            <th>Click Speed</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th>$25.00</th>
+            <th>12,435</th>
+            <th>450</th>
+            <th>32.1%</th>
+            <th>$11,250</th>
+            <th>167</th>
+            <th>36.8%</th>
+            <th>$60.05</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-content <%= default_tab_class('scoring') -%>" id="scoring">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="8" style="font-size: 18px;">Summary</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Portfolio</th>
+            <th>&nbsp;</th>
+            <th>Score</th>
+            <th>Scores</th>
+            <th>Avg. Cost</th>
+            <th>Tot. Cost</th>
+            <th>Per Lead</th>
+            <th>Per Loan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>All</th>
+            <th>&nbsp;</th>
+            <th>Factor Trust</th>
+            <th>750</th>
+            <th>$0.86</th>
+            <th>$1,307.00</th>
+            <th>$5.83</th>
+            <th>$12.59</th>
+          </tr>
+        </tbody>
+        <thead>
+          <tr><td colspan="8"></td></tr>
+        </thead>
+        <thead>
+          <tr>
+            <th colspan="8" style="font-size: 18px;">Lead Providers</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>&nbsp;</th>
+            <th>Score</th>
+            <th>Scores</th>
+            <th>Avg. Cost</th>
+            <th>Tot. Cost</th>
+            <th>Per Lead</th>
+            <th>Per Loan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Partner Weekly</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>FactorTrust</th>
+            <th>750</th>
+            <th>$0.86</th>
+            <th>$1,307.00</th>
+            <th>$5.83</th>
+            <th>$12.59</th>
+          </tr>
+          <tr>
+            <th>T3 Leads</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th>FactorTrust</th>
+            <th>750</th>
+            <th>$0.86</th>
+            <th>$1,307.00</th>
+            <th>$5.83</th>
+            <th>$11.30</th>
+          </tr>
+          <tr>
+            <th>Lead Flash</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>CL Verify</th>
+            <th>750</th>
+            <th>$0.86</th>
+            <th>$1,307.00</th>
+            <th>$5.83</th>
+            <th>$13.43</th>
+          </tr>
+          <tr>
+            <th>Lead Pile</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>FactorTrust</th>
+            <th>750</th>
+            <th>$0.86</th>
+            <th>$1,307.00</th>
+            <th>$5.83</th>
+            <th>$12.59</th>
+          </tr>
+          <tr>
+            <th>Click Speed</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th>FactorTrust</th>
+            <th>750</th>
+            <th>$0.86</th>
+            <th>$1,307.00</th>
+            <th>$5.83</th>
+            <th>$12.59</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-content <%= default_tab_class('lead_providers') -%>" id="lead_providers">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="11" style="font-size: 18px;">Summary</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Portfolio</th>
+            <th>&nbsp;</th>
+            <th>Pings</th>
+            <th>Accept</th>
+            <th>%</th>
+            <th>Loans</th>
+            <th>%</th>
+            <th>Cost</th>
+            <th>Rel.</th>
+            <th>%</th>
+            <th>Net</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>All</th>
+            <th>&nbsp;</th>
+            <th>10,450</th>
+            <th>1,026</th>
+            <th>9.82%</th>
+            <th>349</th>
+            <th>34.8%</th>
+            <th>$25.00</th>
+            <th>125</th>
+            <th>36.0%</th>
+            <th>$16.05</th>
+          </tr>
+        </tbody>
+                  <thead>
+          <tr><td colspan="11"></td></tr>
+        </thead>
+        <thead>
+          <tr>
+            <th colspan="11" style="font-size: 18px;">Lead Providers</th>
+          </tr>
+        </thead>
+        <thead>
+          <tr>
+            <th>Portfolio</th>
+            <th>&nbsp;</th>
+            <th>Pings</th>
+            <th>Accept</th>
+            <th>%</th>
+            <th>Loans</th>
+            <th>%</th>
+            <th>Cost</th>
+            <th>Rel.</th>
+            <th>%</th>
+            <th>Net</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Partner Weekly</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>1,450</th>
+            <th>150</th>
+            <th>9.82%</th>
+            <th>20</th>
+            <th>34.8%</th>
+            <th>$25.00</th>
+            <th>5</th>
+            <th>25.0%</th>
+            <th>$16.05</th>
+          </tr>
+          <tr>
+            <th>T3 Leads</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th>1,450</th>
+            <th>150</th>
+            <th>9.82%</th>
+            <th>20</th>
+            <th>34.8%</th>
+            <th>$25.00</th>
+            <th>5</th>
+            <th>25.0%</th>
+            <th>$16.05</th>
+          </tr>
+          <tr>
+            <th>Lead Flash</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>1,450</th>
+            <th>150</th>
+            <th>9.82%</th>
+            <th>20</th>
+            <th>34.8%</th>
+            <th>$25.00</th>
+            <th>5</th>
+            <th>25.0%</th>
+            <th>$16.05</th>
+          </tr>
+          <tr>
+            <th>Lead Pile</th>
+            <th><%= image_tag("/images/icons/up.png", :border => 0) %></th>
+            <th>1,450</th>
+            <th>150</th>
+            <th>9.82%</th>
+            <th>20</th>
+            <th>34.8%</th>
+            <th>$25.00</th>
+            <th>5</th>
+            <th>25.0%</th>
+            <th>$16.05</th>
+          </tr>
+          <tr>
+            <th>Click Speed</th>
+            <th><%= image_tag("/images/icons/down.png", :border => 0) %></th>
+            <th>1,450</th>
+            <th>150</th>
+            <th>9.82%</th>
+            <th>20</th>
+            <th>34.8%</th>
+            <th>$25.00</th>
+            <th>5</th>
+            <th>25.0%</th>
+            <th>$16.05</th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

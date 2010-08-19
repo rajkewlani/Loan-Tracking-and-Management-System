@@ -1,0 +1,142 @@
+%PDF-1.3
+%âãÏÓ
+
+1 0 obj
+<< /Type /Catalog
+/Outlines 2 0 R
+/Pages 3 0 R>>
+endobj
+2 0 obj
+<< /Type /Outlines >>
+endobj
+3 0 obj
+<< /Type /Pages
+/Kids [6 0 R
+]
+/Count 1
+/Resources <<
+/ProcSet 4 0 R
+/Font << 
+/F1 8 0 R >>
+>>
+/MediaBox [0 0 612.0 792.0]
+ >>
+endobj
+4 0 obj
+[/PDF /Text ]
+endobj
+5 0 obj
+<<
+/CreationDate (D:201004161118)
+/Creator (server)
+/Producer (PDF::Writer for Ruby)
+>>
+endobj
+6 0 obj
+<< /Type /Page
+/Parent 3 0 R
+/Contents [
+7 0 R
+9 0 R
+]
+>>
+endobj
+7 0 obj
+<<
+/Length 351 >>
+stream
+
+0.000 0.000 0.000 rg
+0.000 0.000 0.000 RG
+0.800 0.800 0.800 RG
+BT 265.986 742.128 Td /F1 12.0 Tf 0 Tr (Sample Tables) Tj ET
+BT 262.820 721.256 Td /F1 12.0 Tf 0 Tr (First) Tj ET
+BT 298.081 721.256 Td /F1 12.0 Tf 0 Tr (Second) Tj ET
+q
+0.800 0.800 0.800 rg
+257.820 699.196 86.359 15.560 re f
+0.800 0.800 0.800 rg
+257.820 668.076 86.359 15.560 re f
+1 w
+Q
+endstream
+endobj
+
+8 0 obj
+<< /Type /Font
+/Subtype /Type1
+/Name /F1
+/BaseFont /Helvetica
+/Encoding /WinAnsiEncoding
+>>
+endobj
+9 0 obj
+<<
+/Length 738 >>
+stream
+
+BT 262.820 703.446 Td /F1 10.0 Tf 0 Tr (1) Tj ET
+BT 298.081 703.446 Td /F1 10.0 Tf 0 Tr (2) Tj ET
+q
+0.000 0.000 0.000 RG
+1 w
+257.820 714.756 m
+344.180 714.756 l S
+1 w
+Q
+BT 262.820 687.886 Td /F1 10.0 Tf 0 Tr (One) Tj ET
+BT 298.081 687.886 Td /F1 10.0 Tf 0 Tr (Two) Tj ET
+q
+0.000 0.000 0.000 RG
+1 w
+257.820 699.196 m
+344.180 699.196 l S
+1 w
+Q
+BT 262.820 672.326 Td /F1 10.0 Tf 0 Tr (Mono) Tj ET
+BT 298.081 672.326 Td /F1 10.0 Tf 0 Tr (Di) Tj ET
+q
+0.000 0.000 0.000 RG
+1 w
+257.820 683.636 m
+344.180 683.636 l S
+1 w
+Q
+0.000 0.000 0.000 RG
+1 w
+257.820 737.128 m
+257.820 668.076 l S
+1 w
+293.081 737.128 m
+293.081 668.076 l S
+1 w
+344.180 737.128 m
+344.180 668.076 l S
+257.320 737.128 m
+344.680 737.128 l S
+257.320 668.076 m
+344.680 668.076 l S
+endstream
+endobj
+
+xref
+0 10
+0000000000 65535 f 
+0000000019 00000 n 
+0000000083 00000 n 
+0000000120 00000 n 
+0000000262 00000 n 
+0000000291 00000 n 
+0000000394 00000 n 
+0000000467 00000 n 
+0000000870 00000 n 
+0000000977 00000 n 
+
+trailer
+  << /Size 10
+     /Root 1 0 R
+ /Info 5 0 R
+  >>
+startxref
+1767
+%%EOF

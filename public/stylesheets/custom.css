@@ -1,0 +1,19 @@
+table th, table td { text-align:left;padding-left:20px; }
+table th.first, table td.first { padding-left:0px }
+table#loan_activity th, table#loan_activity td { padding-left: 20px;padding-bottom:10px }
+
+/************ Table ************/
+
+
+.modal-content table {
+  border-collapse: collapse;
+}
+
+.modal-content th {
+  font-weight: bold;
+}
+
+.modal-content td {
+  border-bottom: 5px;
+  padding: 5px;
+}

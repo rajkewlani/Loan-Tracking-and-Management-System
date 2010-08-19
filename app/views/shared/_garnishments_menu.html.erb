@@ -1,0 +1,53 @@
+          <ul id="main-nav">  <!-- Accordion Menu -->
+
+            <li>
+              <%= link_to "Loans", "#", :class => "nav-top-item #{controller.controller_name == 'loans' ? 'current' : ''}" %>
+              <ul>
+                <li>
+                  <%= link_to "My Loans", my_loans_path,
+                    :class => (((["my_loans"].include? controller.action_name) &&
+                        (["loans"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+                <li>
+                  <%= link_to "Garnishments", garnishment_paying_loans_path,
+                    :class => (((["garnishment_paying"].include? controller.action_name) &&  (["loans"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+                <li>
+                  <%= link_to "Follow-Up", garnishment_follow_up_loans_path,
+                    :class => (((["garnishment_follow_up"].include? controller.action_name) &&  (["loans"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+                <li>
+                  <%= link_to "Payment Plans", garnishment_payment_plans_path,
+                    :class => (((["garnishment_payment_plans"].include? controller.action_name) &&
+                        (["loans"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+              </ul>
+            </li>
+
+            <li><%= link_to "Reports", "#{}", :class => "nav-top-item #{controller.controller_name == 'reports' ? 'current' : ''}" %>
+              <ul>
+                <li>
+                    <%= link_to "Performance", garnishments_performance_path,
+                      :class => (((["garnishments_performance"].include? controller.action_name) &&
+                          (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+                <li>
+                    <%= link_to "Reminders", reminders_report_path,
+                      :class => (((["reminders"].include? controller.action_name) &&
+                          (["reports"].include? controller.controller_name)) ? "current" : "") %>
+                </li>
+              </ul>
+            </li>
+
+            <% if current_user.manager==true %>
+              <li>
+                <%= link_to "Team", "#",:class => "nav-top-item #{(["users"].include? controller.controller_name) ? 'current' : ''}" %>
+                <ul>
+                  <li><%= link_to "Team Availability", {:controller=>:users,:action=>:team_availability},
+                      :class => ((["mail_templates"].include? controller.action_name) ? "team_availability" : "") %></li>
+                </ul>
+              </li>
+            <%end%>
+            <li><%= link_to "Help", root_path, :class => "nav-top-item" %></li>
+
+          </ul> <!-- End #main-nav -->

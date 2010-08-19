@@ -1,0 +1,47 @@
+<h2>Contact FloBridge</h2>
+
+<div class="contents">
+  <p>
+    You can contact FloBridge by calling our call center at <strong>(866) 569-3321</strong>.  Alternatively, you can fill out the form below to contact us via email.
+  </p>
+  
+  <br/>
+  
+  <fieldset style="width: 460px; float: left; margin: 0px;">
+    <legend>Contact FloBridge</legend>
+  <% form_tag do %>
+    <p>
+      <label for="email" style="display: block;">Email Address:</label>
+      <%= text_field_tag :email, "", :style => "width: 250px;" %>
+    </p>
+    <p>
+      <label for="message" style="display: block;">Message:</label>
+      <%= text_area_tag :message, "", :rows => 6, :style => "width: 440px;" %>
+    </p>
+    <div align="center">
+      <%= submit_tag "Send Message" %>
+    </div>
+  <% end %>
+  </fieldset>
+  <!--
+  <fieldset style="width: 260px; float: right; margin: 0px;">
+    <legend>Member Area</legend>
+    <p>
+      Click the button below to login to your member area to make a payment or apply for a new loan.
+    </p>
+    <div align="center">
+      <%#= button_to "Member Area Login", "http://www.flobridge.net/MemberPage.aspx?subpage=customerLogin" %>
+    </div>
+  </fieldset>
+  -->
+  <!--
+  <fieldset style="width: 755px; float: left; margin: 0px;">
+    <legend>Questions or Complaints</legend>
+    <p>
+     Please contact us with any customer service related issues at <b>(866) 569-3321</b>. Complaints from Utah residents (other than for high interest or lack of funds to pay your loan) which cannot be resolved by speaking with us, may be referred to the Utah State Department of Financial Institutions at (801) 538-8830. Residents of other states may contact the regulatory agencies of the states in which they reside.
+    </p>
+  </fieldset>
+  -->
+      
+  <div class="clear"></div>
+</div>
