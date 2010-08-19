@@ -1,8 +1,0 @@
-<% form_for :loan, :html => { :id => 'garnishment_telephone_status_form'} do |f| %>
-  <%= f.hidden_field :id, :value => @loan.id, :id => 'garnishment_telephone_status_loan_id' %>
-  <fieldset>
-    <p>
-      <%= f.select :garnishment_telephone_status, ['no_answer','left_message'], :include_blank => true %>
-    </p>
-  </fieldset>
-<% end %>

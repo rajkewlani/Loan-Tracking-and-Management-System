@@ -1,4 +1,0 @@
-<% form_tag '', {:id => 'edit_loan_amount_form', :style => 'width:80px;display:inline;' } do %>
-  <%= hidden_field_tag :id, params[:id] %>
-  <%= text_field_tag "amount_field", number_with_precision(@loan.signature_page_loan_amount, :precision => 2), :size => 7, :maxlength => 6 %>
-<% end %>

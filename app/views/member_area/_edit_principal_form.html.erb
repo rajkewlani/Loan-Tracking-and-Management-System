@@ -1,4 +1,0 @@
-<% form_tag '/member_area/set_payment_principal', :id => 'edit_principal_form' do %>
-  <%= hidden_field_tag :id, params[:id] %>
-  <%= text_field_tag "principal_field", number_with_precision(@scheduled_payment.principal, :precision => 2), :size => 7, :maxlength => 6 %>
-<% end %>
